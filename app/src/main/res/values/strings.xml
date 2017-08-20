@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Spyder</string>
+    <string name="need_account">need account?</string>
+    <string name="log_in">Log In</string>
+    <string name="username"> Username</string>
+    <string name="app_icon">app_icon</string>
+    <string name="passwoard">Passwoard</string>
+    <string name="android_nbackground_nanimated_gradient">Android  Background  Animated Gradient</string>
+    <string name="next">next</string>
+</resources>
