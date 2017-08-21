@@ -7,4 +7,11 @@
     <string name="passwoard">Passwoard</string>
     <string name="android_nbackground_nanimated_gradient">Android  Background  Animated Gradient</string>
     <string name="next">next</string>
+    <string name="title_activity_main">MainActivity</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="hello_blank_fragment">hello_blank_fragment</string>
 </resources>
