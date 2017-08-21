@@ -30,4 +30,5 @@ dependencies {
     implementation 'com.android.support:cardview-v7:26.0.1'
     compile 'com.github.nipun-birla:BoxLoaderView:0.0.1'
     compile 'nl.psdcompany:duo-navigation-drawer:2.0.6'
+    compile 'com.android.support:percent:26.0.1'
 }
