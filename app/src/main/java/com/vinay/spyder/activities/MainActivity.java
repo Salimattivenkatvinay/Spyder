@@ -1,4 +1,4 @@
-package com.vinay.spyder;
+package com.vinay.spyder.activities;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -7,6 +7,8 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.widget.Toast;
 
+import com.vinay.spyder.R;
+import com.vinay.spyder.fragments.FilterFragment;
 import com.vinay.spyder.fragments.MainFragment;
 
 import java.util.ArrayList;
@@ -19,7 +21,6 @@ import nl.psdcompany.duonavigationdrawer.widgets.DuoDrawerToggle;
 public class MainActivity extends AppCompatActivity implements DuoMenuView.OnMenuClickListener {
     private MenuAdapter mMenuAdapter;
     private ViewHolder mViewHolder;
-
     private ArrayList<String> mTitles = new ArrayList<>();
 
     @Override
@@ -45,6 +46,7 @@ public class MainActivity extends AppCompatActivity implements DuoMenuView.OnMen
         mMenuAdapter.setViewSelected(0, true);
         setTitle(mTitles.get(0));
     }
+
 
     private void handleToolbar() {
         setSupportActionBar(mViewHolder.mToolbar);
@@ -99,6 +101,9 @@ public class MainActivity extends AppCompatActivity implements DuoMenuView.OnMen
 
         // Navigate to the right fragment
         switch (position) {
+            case 1:
+                goToFragment(FilterFragment.newInstance(),false);
+                break;
             default:
                 goToFragment(new MainFragment(), false);
                 break;

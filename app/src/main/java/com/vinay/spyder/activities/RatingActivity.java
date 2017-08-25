@@ -1,12 +1,13 @@
-package com.vinay.spyder;
+package com.vinay.spyder.activities;
 
 import android.content.Intent;
 import android.graphics.drawable.AnimationDrawable;
-import android.support.constraint.ConstraintLayout;
 import android.support.percent.PercentRelativeLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+
+import com.vinay.spyder.R;
 
 public class RatingActivity extends AppCompatActivity {
 
@@ -25,7 +26,7 @@ public class RatingActivity extends AppCompatActivity {
         findViewById(R.id.btn_next).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(RatingActivity.this,MainActivity.class));
+                startActivity(new Intent(RatingActivity.this,MainActivity1.class));
             }
         });
     }

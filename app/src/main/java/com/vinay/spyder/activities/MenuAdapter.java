@@ -1,4 +1,4 @@
-package com.vinay.spyder;
+package com.vinay.spyder.activities;
 
 import android.view.View;
 import android.view.ViewGroup;

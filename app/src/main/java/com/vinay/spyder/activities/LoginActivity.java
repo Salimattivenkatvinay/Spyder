@@ -1,9 +1,11 @@
-package com.vinay.spyder;
+package com.vinay.spyder.activities;
 
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
+
+import com.vinay.spyder.R;
 
 public class LoginActivity extends AppCompatActivity {
 
