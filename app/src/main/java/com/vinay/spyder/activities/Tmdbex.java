@@ -1,9 +1,7 @@
 package com.vinay.spyder.activities;
 
 import android.os.AsyncTask;
-import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.RequiresApi;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
@@ -14,14 +12,14 @@ import info.movito.themoviedbapi.TmdbMovies;
 import info.movito.themoviedbapi.model.MovieDb;
 
 public class Tmdbex extends AppCompatActivity {
+    MovieDb movie;
 @Override
 protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_tmdb);
 
         MovieTask mt = new MovieTask();
         mt.execute();
-
 
         }
 
