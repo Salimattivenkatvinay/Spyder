@@ -69,10 +69,10 @@ public class Tmdbex extends AppCompatActivity {
                         //Toast.makeText(Tmdbex.this, response, Toast.LENGTH_LONG).show();
                         try {
                             JSONObject json = new JSONObject(response);
-                           JSONArray jArray = json.getJSONArray("genres");
+                           //JSONArray jArray = json.getJSONArray("genres");
                             //JSONObject jsonObject=json.getJSONObject("overview");
                             result.setText("overview:-   "+json.getString("overview")+"\n\n"+"status:-   "+json.getString("status")
-                            +"\n\ngeners:-"+jArray);
+                            +"\n\ngeners:-"+json.getJSONArray("genres"));
 
                         } catch (JSONException e) {
                             e.printStackTrace();
