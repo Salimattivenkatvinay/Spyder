@@ -3,6 +3,7 @@ package com.vinay.spyder.activities;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.vinay.spyder.R;
@@ -12,17 +13,21 @@ import info.movito.themoviedbapi.TmdbMovies;
 import info.movito.themoviedbapi.model.MovieDb;
 
 public class Tmdbex extends AppCompatActivity {
-    MovieDb movie;
+    static MovieDb movie;
+    TextView textView;
 @Override
 protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tmdb);
+    super.onCreate(savedInstanceState);
+    setContentView(R.layout.activity_tmdb);
+    textView = ((TextView) findViewById(R.id.textView));
+    final MovieTask mt = new MovieTask();
+    mt.execute();
 
-        MovieTask mt = new MovieTask();
-        mt.execute();
+    //if(mt.getStatus()== AsyncTask.Status.FINISHED) ((TextView)findViewById(R.id.textView)).setText(movie.getOverview());
 
-        }
 
+
+}
 protected class MovieTask extends AsyncTask<Void, Void, MovieDb> {
 
     protected MovieDb doInBackground(Void... v) {
@@ -33,7 +38,7 @@ protected class MovieTask extends AsyncTask<Void, Void, MovieDb> {
 
     protected void onPostExecute(MovieDb movie) {
         // Do something with movie
-        Toast.makeText(getApplicationContext(),movie.toString(),Toast.LENGTH_LONG).show();
+        Toast.makeText(getApplicationContext(),movie.getOverview(),Toast.LENGTH_LONG).show();
     }
 }
 }
