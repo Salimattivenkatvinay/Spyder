@@ -13,7 +13,8 @@
         android:layout_width="wrap_content"
         android:layout_height="100dp"
         android:src="@android:drawable/ic_dialog_dialer"
-        android:contentDescription="@string/app_icon">
+        android:contentDescription="@string/app_icon"
+        android:layout_gravity="center_horizontal">
         <requestFocus/>
     </ImageView>
 
@@ -56,36 +57,35 @@
             tools:targetApi="lollipop" />
     </android.support.design.widget.TextInputLayout>
 
-    <TextView
-        android:id="@+id/tv_sign_up"
-        android:layout_width="wrap_content"
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginTop="16dp"
-        android:text="@string/need_account"
-        android:textColor="#ffffff"
-        android:textSize="16sp" />
+        android:layout_marginTop="10dp"
+        android:textColorHint="#cccccc">
+
+        <EditText
+            android:id="@+id/et_repassword"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:backgroundTint="#ffff"
+            android:drawableStart="@android:drawable/ic_lock_lock"
+            android:hint="Re-enter passwoard"
+            android:inputType="textPassword"
+            android:textColor="#cccccc"
+            android:textSize="20sp"
+            tools:targetApi="lollipop" />
+    </android.support.design.widget.TextInputLayout>
 
     <Button
-        android:id="@+id/btn_login"
+        android:id="@+id/btn_signup"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="30dp"
         android:background="#79a209df"
-        android:text="@string/log_in"
+        android:text="@string/Sign_Up"
         android:textColor="#cccccc"
         android:layout_marginBottom="10dp"/>
 
-    <com.google.android.gms.common.SignInButton
-        android:id="@+id/gplus_sign_in_button"
-        android:layout_marginBottom="10dp"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
-
-    <TextView
-        android:id="@+id/connected_status"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:visibility="gone"/>
 
 </LinearLayout>
