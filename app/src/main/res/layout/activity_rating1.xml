@@ -18,46 +18,10 @@
         android:text="Button"
         android:background="@drawable/next_shape"/>
 
-    <android.support.v7.widget.CardView
-        app:layout_widthPercent="40%"
-        app:layout_heightPercent="25%"
-        app:layout_marginTopPercent="12%"
-        app:layout_marginLeftPercent="6%"
+    <android.support.v7.widget.RecyclerView
         >
 
-    </android.support.v7.widget.CardView>
-    <android.support.v7.widget.CardView
-        app:layout_widthPercent="40%"
-        app:layout_heightPercent="25%"
-        app:layout_marginTopPercent="12%"
-        app:layout_marginLeftPercent="56%"
-        >
 
-    </android.support.v7.widget.CardView>
-    <android.support.v7.widget.CardView
-        app:layout_widthPercent="40%"
-        app:layout_heightPercent="25%"
-        app:layout_marginTopPercent="42%"
-        app:layout_marginLeftPercent="6%"
-        >
-
-    </android.support.v7.widget.CardView>
-    <android.support.v7.widget.CardView
-        app:layout_widthPercent="40%"
-        app:layout_heightPercent="25%"
-        app:layout_marginTopPercent="42%"
-        app:layout_marginLeftPercent="56%"
-        >
-
-    </android.support.v7.widget.CardView>
-
-    <android.support.v7.widget.CardView
-        app:layout_widthPercent="40%"
-        app:layout_heightPercent="25%"
-        app:layout_marginTopPercent="72%"
-        app:layout_marginLeftPercent="36%"
-        >
-
-    </android.support.v7.widget.CardView>
+    </android.support.v7.widget.RecyclerView>
 
 </android.support.percent.PercentRelativeLayout>
