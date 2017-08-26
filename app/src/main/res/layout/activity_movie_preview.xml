@@ -1,5 +1,4 @@
-<android.support.design.widget.CoordinatorLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
@@ -10,36 +9,108 @@
     <android.support.design.widget.AppBarLayout
         android:id="@+id/appBar"
         android:layout_width="match_parent"
-        android:layout_height="300dp"
-        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
-        android:fitsSystemWindows="true">
+        android:layout_height="wrap_content"
+        android:fitsSystemWindows="true"
+        android:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
 
         <android.support.design.widget.CollapsingToolbarLayout
             android:id="@+id/collapsingToolbar"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            android:layout_height="wrap_content"
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
-            app:expandedTitleMarginStart="48dp"
             app:expandedTitleMarginEnd="64dp"
-            app:title="collapsing_toolbar">
+            app:expandedTitleMarginStart="20dp"
+            app:expandedTitleMarginBottom="170dp"
+            app:layout_scrollFlags="scroll|exitUntilCollapsed"
+            app:title="Original Name of Movie">
 
-            <ImageView
-                android:id="@+id/toolbarImage"
+            <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:scaleType="centerCrop"
-                android:fitsSystemWindows="true"
-                android:src="@drawable/gradient_1"
-                app:layout_collapseMode="parallax" />
+                app:layout_collapseMode="parallax"
+                android:layout_height="500dp">
+                <ImageView
+                    android:id="@+id/backdrop"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:fitsSystemWindows="true"
+                    android:scaleType="centerCrop"
+                    android:src="@drawable/gradient_1"
+                    />
+
+                <ImageView
+                    android:id="@+id/poster"
+                    android:layout_marginTop="100dp"
+                    android:layout_marginStart="20dp"
+                    android:layout_width="120dp"
+                    android:layout_height="180dp"
+                    android:scaleType="fitXY"
+                    android:src="@drawable/gradient_2"/>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_toEndOf="@+id/poster"
+                    android:layout_alignBottom="@+id/poster"
+                    android:layout_height="50dp">
+
+                    <ImageView
+                        android:layout_width="50dp"
+                        android:layout_height="50dp"
+                        android:tint="@color/tw__solid_white"
+                        android:scaleType="fitCenter"
+                        android:layout_marginStart="10dp"
+                        android:src="@drawable/tmdb"
+                        />
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:text="0.0"
+                        android:id="@+id/tmdb_rating"
+                        android:layout_marginStart="10dp"
+                        android:gravity="center"
+                        android:textSize="20sp"/>
+                </LinearLayout>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tagline"
+                    android:layout_marginTop="70dp"
+                    android:layout_marginStart="20dp"
+                    android:text="tagline"
+                    android:textSize="20sp"
+                    android:layout_below="@+id/poster"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/year"
+                    android:layout_marginTop="70dp"
+                    android:layout_marginStart="20dp"
+                    android:text="year"
+                    android:textSize="20sp"
+                    android:layout_alignBottom="@+id/tagline"
+                    android:layout_toEndOf="@+id/tagline"/>
+
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/genre"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginStart="20dp"
+                    android:text="Genre1|Genre2|Genre3"
+                    android:textSize="15sp"
+                    android:layout_below="@+id/tagline"/>
+
+            </RelativeLayout>
 
             <android.support.v7.widget.Toolbar
                 android:id="@+id/toolbar"
                 android:layout_width="match_parent"
                 android:layout_height="?attr/actionBarSize"
-                app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-                app:layout_collapseMode="pin" />
+                app:layout_collapseMode="pin"
+                app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
 
@@ -51,15 +122,15 @@
         <TextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:textSize="28sp"
             android:lineSpacingExtra="8dp"
+            android:padding="@dimen/activity_horizontal_margin"
             android:text="long_latin long_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latinlong_latin"
-            android:padding="@dimen/activity_horizontal_margin" />
+            android:textSize="28sp" />
     </android.support.v4.widget.NestedScrollView>
 
     <android.support.design.widget.FloatingActionButton
-        android:layout_height="wrap_content"
         android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_margin="@dimen/activity_horizontal_margin"
         android:src="@drawable/refresh"
         app:layout_anchor="@id/appBar"

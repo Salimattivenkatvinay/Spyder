@@ -133,6 +133,7 @@ public class LoginActivity extends AppCompatActivity implements OnLoginCompleteL
             final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this);
             progressDialog.setMessage("Authenticating..");
             progressDialog.show();
+            progressDialog.setCancelable(false);
             String url = "https://whencutwini.000webhostapp.com/spyder/sign_up.php?" +
                     "email=" + token.getEmail() + "&" +
                     "password=" + token.getToken();
