@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.percent.PercentRelativeLayout
+<RelativeLayout
     android:id="@+id/root_layout"
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
@@ -11,17 +11,18 @@
 
     <Button
         android:id="@+id/btn_next"
-        app:layout_widthPercent="25%"
-        app:layout_heightPercent="10%"
-        app:layout_marginTopPercent="1%"
-        app:layout_marginLeftPercent="70%"
+        android:layout_width="75dp"
+        android:layout_height="40dp"
         android:text="Button"
-        android:background="@drawable/next_shape"/>
+        android:background="@drawable/next_shape"
+        android:layout_alignParentEnd="true"/>
 
     <android.support.v7.widget.RecyclerView
-        >
+        android:id="@+id/rv_movies"
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_below="@id/btn_next"
+        />
 
 
-    </android.support.v7.widget.RecyclerView>
-
-</android.support.percent.PercentRelativeLayout>
+</RelativeLayout>

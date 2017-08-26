@@ -55,7 +55,6 @@ public class MoviePreview extends AppCompatActivity {
         backdropView = findViewById(R.id.backdrop);
 
         collapsingToolbarLayout.setTitle(title);
-        collapsingToolbarLayout.setEX
         taglineView.setText(tagline);
         genresView.setText(genres);
         voteView.setText(voteavg);
