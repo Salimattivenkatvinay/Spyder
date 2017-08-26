@@ -73,6 +73,18 @@
         android:layout_marginTop="30dp"
         android:background="#79a209df"
         android:text="@string/log_in"
-        android:textColor="#cccccc" />
+        android:textColor="#cccccc"
+        android:layout_marginBottom="10dp"/>
+
+    <com.google.android.gms.common.SignInButton
+        android:id="@+id/gplus_sign_in_button"
+        android:layout_marginBottom="10dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" />
+
+    <TextView
+        android:id="@+id/connected_status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content" />
 
 </LinearLayout>
