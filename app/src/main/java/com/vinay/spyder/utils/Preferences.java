@@ -23,7 +23,7 @@ public class Preferences {
     public static HashMap<String,String> getCredentials(Context context){
         SharedPreferences preferences = context.getSharedPreferences("login",Context.MODE_PRIVATE);
         HashMap<String,String> details = new HashMap<>();
-        if (preferences.getString("email",null)!=null){
+        if (preferences.getString("password",null)!="" && preferences.getString("password",null)!= null){
             details.put("password",preferences.getString("token",null));
             details.put("email",preferences.getString("email",null));
             return details;

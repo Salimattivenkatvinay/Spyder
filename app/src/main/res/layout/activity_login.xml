@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -12,9 +11,10 @@
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="100dp"
-        android:src="@android:drawable/ic_dialog_dialer"
-        android:contentDescription="@string/app_icon">
-        <requestFocus/>
+        android:contentDescription="@string/app_icon"
+        android:src="@android:drawable/ic_dialog_dialer">
+
+        <requestFocus />
     </ImageView>
 
     <android.support.design.widget.TextInputLayout
@@ -56,30 +56,46 @@
             tools:targetApi="lollipop" />
     </android.support.design.widget.TextInputLayout>
 
-    <TextView
-        android:id="@+id/tv_sign_up"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end"
-        android:layout_marginTop="16dp"
-        android:text="@string/need_account"
-        android:textColor="#ffffff"
-        android:textSize="16sp" />
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <CheckBox
+            android:id="@+id/is_savepass"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="start"
+            android:layout_marginTop="16dp"
+            android:buttonTint="@color/tw__solid_white"
+            android:checked="true"
+            android:text="Save Credendials"
+            android:textColor="@color/tw__solid_white" />
+
+        <TextView
+            android:id="@+id/tv_sign_up"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_marginTop="16dp"
+            android:text="@string/need_account"
+            android:textColor="#ffffff"
+            android:textSize="16sp" />
+    </RelativeLayout>
 
     <Button
         android:id="@+id/btn_login"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
         android:layout_marginTop="30dp"
         android:background="#79a209df"
         android:text="@string/log_in"
-        android:textColor="#cccccc"
-        android:layout_marginBottom="10dp"/>
+        android:textColor="#cccccc" />
 
     <com.google.android.gms.common.SignInButton
         android:id="@+id/gplus_sign_in_button"
-        android:layout_marginBottom="10dp"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp" />
 
 </LinearLayout>

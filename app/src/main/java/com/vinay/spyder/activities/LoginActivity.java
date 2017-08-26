@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -33,44 +34,51 @@ public class LoginActivity extends AppCompatActivity implements OnLoginCompleteL
 
     private GooglePlusNetwork gPlusNetwork;
 
-    EditText et_uname,et_password;
+    CheckBox save_details;
+    EditText et_uname, et_password;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         EasyLogin.initialize();
         easyLogin = EasyLogin.getInstance();
         setContentView(R.layout.activity_login);
-        et_uname=findViewById(R.id.et_uname);
-        et_password=findViewById(R.id.et_password);
-        final ProgressDialog progressDialog=new ProgressDialog(LoginActivity.this);
+        et_uname = findViewById(R.id.et_uname);
+        et_password = findViewById(R.id.et_password);
+        save_details = findViewById(R.id.is_savepass);
+        final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this);
         progressDialog.setMessage("Checking credentials");
         findViewById(R.id.btn_login).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(checkEmail() && checkPassword()) {
+                if (checkEmail() && checkPassword()) {
                     progressDialog.show();
-                    String url = "https://whencutwini.000webhostapp.com/spyder/login.php?email="+et_uname.getText()+"&pwd="+et_password.getText();
+                    String url = "https://whencutwini.000webhostapp.com/spyder/login.php?email=" + et_uname.getText() + "&pwd=" + et_password.getText();
                     RequestQueue requestQueue = Volley.newRequestQueue(LoginActivity.this);
                     StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
                         @Override
                         public void onResponse(String response) {
                             progressDialog.dismiss();
                             //Toast.makeText(getApplicationContext(),response,Toast.LENGTH_SHORT).show();
-                            if(Integer.parseInt(response)>0) {
-                                Preferences.saveCredentials(LoginActivity.this,et_uname.getText().toString(),et_password.getText().toString());
-                                if (com.vinay.spyder.utils.Preferences.isIntialRated(LoginActivity.this)){
-                                    startActivity(new Intent(LoginActivity.this,RatingActivity.class));
-                                }else {
-                                    startActivity(new Intent(LoginActivity.this,AskToRate.class));
+                            if (Integer.parseInt(response) > 0) {
+                                if (save_details.isChecked())
+                                    Preferences.saveCredentials(LoginActivity.this, et_uname.getText().toString(), et_password.getText().toString());
+                                else
+                                    Preferences.saveCredentials(LoginActivity.this, et_uname.getText().toString(), "");
+
+                                if (com.vinay.spyder.utils.Preferences.isIntialRated(LoginActivity.this)) {
+                                    startActivity(new Intent(LoginActivity.this, RatingActivity.class));
+                                } else {
+                                    startActivity(new Intent(LoginActivity.this, AskToRate.class));
                                 }
-                            }
-                            else Toast.makeText(getApplicationContext(),"wrong credentials",Toast.LENGTH_SHORT).show();
+                            } else
+                                Toast.makeText(getApplicationContext(), "wrong credentials", Toast.LENGTH_SHORT).show();
                         }
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             progressDialog.dismiss();
-                            Toast.makeText(getApplicationContext(),error.getMessage(),Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
                         }
                     });
                     requestQueue.add(stringRequest);
@@ -81,7 +89,7 @@ public class LoginActivity extends AppCompatActivity implements OnLoginCompleteL
         findViewById(R.id.tv_sign_up).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(LoginActivity.this,SignUpActivity.class));
+                startActivity(new Intent(LoginActivity.this, SignUpActivity.class));
             }
         });
 
@@ -94,6 +102,7 @@ public class LoginActivity extends AppCompatActivity implements OnLoginCompleteL
         gPlusNetwork.setSignInButton(gPlusButton);
 
     }
+
     @Override
     protected void onStart() {
         super.onStart();
@@ -122,22 +131,22 @@ public class LoginActivity extends AppCompatActivity implements OnLoginCompleteL
         if (network == SocialNetwork.Network.GOOGLE_PLUS) {
             AccessToken token = easyLogin.getSocialNetwork(SocialNetwork.Network.GOOGLE_PLUS).getAccessToken();
             Log.d("MAIN", "G+ Login successful: " + token.getToken() + "|||" + token.getEmail());
-            final ProgressDialog progressDialog=new ProgressDialog(LoginActivity.this);
+            final ProgressDialog progressDialog = new ProgressDialog(LoginActivity.this);
             progressDialog.setMessage("Authenticating..");
             progressDialog.show();
             String url = "https://whencutwini.000webhostapp.com/spyder/sign_up.php?" +
-                    "email="+token.getEmail()+"&" +
-                    "password="+token.getToken();
+                    "email=" + token.getEmail() + "&" +
+                    "password=" + token.getToken();
 
             RequestQueue requestQueue = Volley.newRequestQueue(LoginActivity.this);
             StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
                     progressDialog.dismiss();
-                    if (com.vinay.spyder.utils.Preferences.isIntialRated(LoginActivity.this)){
-                        startActivity(new Intent(LoginActivity.this,RatingActivity.class));
-                    }else {
-                        startActivity(new Intent(LoginActivity.this,AskToRate.class));
+                    if (com.vinay.spyder.utils.Preferences.isIntialRated(LoginActivity.this)) {
+                        startActivity(new Intent(LoginActivity.this, RatingActivity.class));
+                    } else {
+                        startActivity(new Intent(LoginActivity.this, AskToRate.class));
                     }
                 }
             }, new Response.ErrorListener() {
@@ -148,7 +157,7 @@ public class LoginActivity extends AppCompatActivity implements OnLoginCompleteL
             });
             requestQueue.add(stringRequest);
             gPlusButton.setEnabled(false);
-            Preferences.saveCredentials(LoginActivity.this,token.getEmail(),token.getToken());
+            Preferences.saveCredentials(LoginActivity.this, token.getEmail(), token.getToken());
         }
         updateStatuses();
     }
@@ -176,8 +185,9 @@ public class LoginActivity extends AppCompatActivity implements OnLoginCompleteL
         }
         updateStatuses();
     }
+
     private boolean checkPassword() {
-        if(et_password.getText().toString().trim().length()==0){
+        if (et_password.getText().toString().trim().length() == 0) {
             et_password.setError("password cannot be empty");
             return false;
         }
@@ -185,11 +195,11 @@ public class LoginActivity extends AppCompatActivity implements OnLoginCompleteL
     }
 
     private boolean checkEmail() {
-        if(et_uname.getText().toString().trim().length()==0) {
+        if (et_uname.getText().toString().trim().length() == 0) {
             et_uname.setError("email cannot be empty");
             return false;
         }
-        if(!et_uname.getText().toString().contains("@")){
+        if (!et_uname.getText().toString().contains("@")) {
             et_uname.setError("invalid email");
             return false;
         }
