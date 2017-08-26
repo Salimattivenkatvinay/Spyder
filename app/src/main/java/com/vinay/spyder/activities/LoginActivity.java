@@ -33,7 +33,6 @@ public class LoginActivity extends AppCompatActivity implements OnLoginCompleteL
 
     private GooglePlusNetwork gPlusNetwork;
 
-    private TextView statusTextView;
     EditText et_uname,et_password;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,8 +57,12 @@ public class LoginActivity extends AppCompatActivity implements OnLoginCompleteL
                             progressDialog.dismiss();
                             //Toast.makeText(getApplicationContext(),response,Toast.LENGTH_SHORT).show();
                             if(Integer.parseInt(response)>0) {
-
-                                startActivity(new Intent(LoginActivity.this,RatingActivity.class));
+                                Preferences.saveCredentials(LoginActivity.this,et_uname.getText().toString(),et_password.getText().toString());
+                                if (com.vinay.spyder.utils.Preferences.isIntialRated(LoginActivity.this)){
+                                    startActivity(new Intent(LoginActivity.this,RatingActivity.class));
+                                }else {
+                                    startActivity(new Intent(LoginActivity.this,AskToRate.class));
+                                }
                             }
                             else Toast.makeText(getApplicationContext(),"wrong credentials",Toast.LENGTH_SHORT).show();
                         }
@@ -72,10 +75,6 @@ public class LoginActivity extends AppCompatActivity implements OnLoginCompleteL
                     });
                     requestQueue.add(stringRequest);
                 }
-
-
-
-               // startActivity(new Intent(LoginActivity.this,RatingActivity.class));
             }
         });
 
@@ -94,8 +93,6 @@ public class LoginActivity extends AppCompatActivity implements OnLoginCompleteL
 
         gPlusNetwork.setSignInButton(gPlusButton);
 
-        // G+ END
-        statusTextView = (TextView) findViewById(R.id.connected_status);
     }
     @Override
     protected void onStart() {
@@ -125,8 +122,33 @@ public class LoginActivity extends AppCompatActivity implements OnLoginCompleteL
         if (network == SocialNetwork.Network.GOOGLE_PLUS) {
             AccessToken token = easyLogin.getSocialNetwork(SocialNetwork.Network.GOOGLE_PLUS).getAccessToken();
             Log.d("MAIN", "G+ Login successful: " + token.getToken() + "|||" + token.getEmail());
+            final ProgressDialog progressDialog=new ProgressDialog(LoginActivity.this);
+            progressDialog.setMessage("Authenticating..");
+            progressDialog.show();
+            String url = "https://whencutwini.000webhostapp.com/spyder/sign_up.php?" +
+                    "email="+token.getEmail()+"&" +
+                    "password="+token.getToken();
+
+            RequestQueue requestQueue = Volley.newRequestQueue(LoginActivity.this);
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    progressDialog.dismiss();
+                    if (com.vinay.spyder.utils.Preferences.isIntialRated(LoginActivity.this)){
+                        startActivity(new Intent(LoginActivity.this,RatingActivity.class));
+                    }else {
+                        startActivity(new Intent(LoginActivity.this,AskToRate.class));
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    progressDialog.dismiss();
+                }
+            });
+            requestQueue.add(stringRequest);
             gPlusButton.setEnabled(false);
-            Preferences.saveCredentials(LoginActivity.this,token);
+            Preferences.saveCredentials(LoginActivity.this,token.getEmail(),token.getToken());
         }
         updateStatuses();
     }
@@ -146,8 +168,6 @@ public class LoginActivity extends AppCompatActivity implements OnLoginCompleteL
                     .append(socialNetwork.isConnected())
                     .append("\n");
         }
-        statusTextView.setText(content.toString());
-        //startActivity(new Intent(LoginActivity.this,RatingActivity.class));
     }
 
     public void logoutAllNetworks(View view) {

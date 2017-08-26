@@ -12,26 +12,34 @@ import java.util.HashMap;
  */
 
 public class Preferences {
-    public static void saveCredentials(Context context, AccessToken token){
-        SharedPreferences preferences = context.getSharedPreferences("login",Context.MODE_WORLD_WRITEABLE);
+    public static void saveCredentials(Context context, String email, String password){
+        SharedPreferences preferences = context.getSharedPreferences("login",Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putString("token",token.getToken());
-        editor.putString("userid",token.getUserId());
-        editor.putString("username",token.getUserName());
-        editor.putString("email",token.getEmail());
+        editor.putString("password",password);
+        editor.putString("email",email);
         editor.apply();
     }
 
     public static HashMap<String,String> getCredentials(Context context){
-        SharedPreferences preferences = context.getSharedPreferences("login",Context.MODE_WORLD_WRITEABLE);
+        SharedPreferences preferences = context.getSharedPreferences("login",Context.MODE_PRIVATE);
         HashMap<String,String> details = new HashMap<>();
-        if (preferences.getString("token",null)!=null){
-            details.put("token",preferences.getString("token",null));
-            details.put("userid",preferences.getString("userid",null));
-            details.put("username",preferences.getString("username",null));
+        if (preferences.getString("email",null)!=null){
+            details.put("password",preferences.getString("token",null));
             details.put("email",preferences.getString("email",null));
             return details;
         }
         return null;
+    }
+
+    public static boolean isIntialRated(Context context){
+        SharedPreferences preferences = context.getSharedPreferences("constants",Context.MODE_PRIVATE);
+        return preferences.getBoolean("is_initial_rated",false);
+    }
+
+    public static void setInitialRated(Context context, Boolean isRated){
+        SharedPreferences preferences = context.getSharedPreferences("constants",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putBoolean("is_initial_rated",isRated);
+        editor.apply();
     }
 }
