@@ -15,6 +15,7 @@ import com.maksim88.easylogin.listener.OnLoginCompleteListener;
 import com.maksim88.easylogin.networks.GooglePlusNetwork;
 import com.maksim88.easylogin.networks.SocialNetwork;
 import com.vinay.spyder.R;
+import com.vinay.spyder.utils.Preferences;
 
 public class LoginActivity extends AppCompatActivity implements OnLoginCompleteListener {
 
@@ -54,10 +55,10 @@ public class LoginActivity extends AppCompatActivity implements OnLoginCompleteL
     @Override
     protected void onStart() {
         super.onStart();
-        if (!gPlusNetwork.isConnected()) {
+        if (gPlusNetwork.isConnected()) {
             gPlusNetwork.silentSignIn();
         } else {
-            gPlusButton.setEnabled(false);
+            gPlusButton.setEnabled(true);
         }
     }
 
@@ -80,13 +81,8 @@ public class LoginActivity extends AppCompatActivity implements OnLoginCompleteL
             AccessToken token = easyLogin.getSocialNetwork(SocialNetwork.Network.GOOGLE_PLUS).getAccessToken();
             Log.d("MAIN", "G+ Login successful: " + token.getToken() + "|||" + token.getEmail());
             gPlusButton.setEnabled(false);
-        }/* else if (network == SocialNetwork.Network.FACEBOOK) {
-            AccessToken token = easyLogin.getSocialNetwork(SocialNetwork.Network.FACEBOOK).getAccessToken();
-            Log.d("MAIN", "FACEBOOK Login successful: " + token.getToken() + "|||" + token.getEmail());
-        } else if (network == SocialNetwork.Network.TWITTER) {
-            AccessToken token = easyLogin.getSocialNetwork(SocialNetwork.Network.TWITTER).getAccessToken();
-            Log.d("MAIN", "TWITTER Login successful: " + token.getToken() + "|||" + token.getEmail());
-        }*/
+            Preferences.saveCredentials(LoginActivity.this,token);
+        }
         updateStatuses();
     }
 
@@ -106,6 +102,7 @@ public class LoginActivity extends AppCompatActivity implements OnLoginCompleteL
                     .append("\n");
         }
         statusTextView.setText(content.toString());
+        startActivity(new Intent(LoginActivity.this,RatingActivity.class));
     }
 
     public void logoutAllNetworks(View view) {
