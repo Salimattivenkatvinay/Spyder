@@ -24,14 +24,20 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.mxn.soul.flowingdrawer_core.FlowingDrawer;
 import com.vinay.spyder.R;
 import com.vinay.spyder.utils.Preferences;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
+import java.util.Collections;
 
 import me.zhanghai.android.materialratingbar.MaterialRatingBar;
 
@@ -65,17 +71,65 @@ public class RatingActivity extends AppCompatActivity {
     }
 
     public void showUserList(View view){
-        Intent intent = new Intent(RatingActivity.this,RatingActivity.class);
+        String title = "";
+        ArrayList<String> temp = new ArrayList<>();
         switch (view.getId()){
             case R.id.recommended:
-                intent.putStringArrayListExtra("showingList",Preferences.getFavourites(RatingActivity.this));
-                break;
+                getRecommended();
+                return;
             case R.id.watchlist:
-                intent.putStringArrayListExtra("showingList",Preferences.getWatchList(RatingActivity.this));
+                temp = Preferences.getWatchList(RatingActivity.this);
+                title = "Watch List";
                 break;
             case R.id.favourites:
-                intent.putStringArrayListExtra("showingList",Preferences.getFavourites(RatingActivity.this));
+                temp = Preferences.getFavourites(RatingActivity.this);
+                title = "Favourites";
                 break;
+        }
+        if (temp!=null && temp.size()>0) {
+            if (null != getSupportActionBar())
+                getSupportActionBar().setTitle(title);
+            mvieId = temp;
+            rv_movie.getAdapter().notifyDataSetChanged();
+        }else
+            Toast.makeText(RatingActivity.this,"List is Empty",Toast.LENGTH_SHORT).show();
+
+        ((FlowingDrawer)findViewById(R.id.drawerlayout)).closeMenu(true);
+    }
+
+    private void getRecommended() {
+        ArrayList<String> topmovies = Preferences.getTopRatedMovies(RatingActivity.this);
+        if (topmovies!=null && topmovies.size()>0) {
+            Collections.sort(topmovies);
+            final ArrayList<String> similarmovies = new ArrayList<>();
+            String url = "https://www.themoviedb.org/movie/" + topmovies.get(topmovies.size()-1);
+            RequestQueue requestQueue = Volley.newRequestQueue(RatingActivity.this);
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+                    Document doc = Jsoup.parse(response);
+                    Elements content = doc.getElementsByClass("item mini backdrop mini_card");
+                    for (Element l : content) {
+                        Elements link = l.getElementsByClass("image_content");
+                        Elements w = link.get(0).getElementsByTag("a");
+                        similarmovies.add(w.get(0).attr("href").substring(6));
+                    }
+                    if (similarmovies!=null && similarmovies.size()>0){
+
+                        if (null != getSupportActionBar())
+                            getSupportActionBar().setTitle("Recommended");
+                        mvieId = similarmovies;
+                        if (rv_movie!=null )
+                            rv_movie.getAdapter().notifyDataSetChanged();
+                    }
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                }
+            });
+            requestQueue.add(stringRequest);
         }
     }
 
@@ -243,7 +297,7 @@ public class RatingActivity extends AppCompatActivity {
 
         @Override
         public int getItemCount() {
-            return mvieId.size();
+            return mvieId==null?0:mvieId.size();
         }
 /*
 

@@ -32,30 +32,6 @@
             android:src="@drawable/gradient_2" />
 
         <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_marginEnd="15dp"
-            android:layout_marginTop="15dp"
-            android:layout_height="wrap_content">
-
-            <com.like.LikeButton
-                app:icon_type="Star"
-                app:circle_start_color="@color/colorPrimary"
-                app:like_drawable="@drawable/thumb_on"
-                app:unlike_drawable="@drawable/thumb_off"
-                app:dots_primary_color="@color/colorAccent"
-                app:dots_secondary_color="@color/colorPrimary"
-                app:circle_end_color="@color/colorAccent"
-                app:icon_size="15dp"
-                android:gravity="bottom"
-                app:liked="true"
-                app:anim_scale_factor="2"
-                app:is_enabled="false"
-                android:layout_height="wrap_content"
-                android:layout_width="wrap_content" />
-        </LinearLayout>
-
-        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="50dp"
             android:layout_alignTop="@+id/poster"

@@ -3,6 +3,7 @@ package com.vinay.spyder.activities;
 import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -33,8 +34,11 @@ import com.google.android.youtube.player.YouTubeBaseActivity;
 import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerFragment;
+import com.like.LikeButton;
+import com.like.OnLikeListener;
 import com.vinay.spyder.R;
 import com.vinay.spyder.utils.CrewItem;
+import com.vinay.spyder.utils.Preferences;
 
 import net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout;
 
@@ -65,6 +69,7 @@ public class MoviePreview extends YouTubeBaseActivity {
     ArrayList<CrewItem> castList = new ArrayList<>();
     ArrayList<CrewItem> crewList = new ArrayList<>();
 
+    LikeButton favourite,watchlist;
     RecyclerView castView, crewView;
 
     @Override
@@ -102,6 +107,8 @@ public class MoviePreview extends YouTubeBaseActivity {
         overviewView = findViewById(R.id.overview);
         castView = findViewById(R.id.cast_recycler);
         crewView = findViewById(R.id.crew_recycler);
+        favourite = findViewById(R.id.fav);
+        watchlist = findViewById(R.id.watch);
 
         collapsingToolbarLayout.setTitle(title);
         taglineView.setText(tagline);
@@ -125,6 +132,9 @@ public class MoviePreview extends YouTubeBaseActivity {
                 .into(backdropView);
 
         ratingBar.setNumStars(5);
+        ratingBar.setRating(((int)Float.parseFloat(voteavg))/2.0f);
+        ratingView.setText(((int)Float.parseFloat(voteavg))/2.0f +"");
+
         ColorStateList colorStateList = new ColorStateList(states,colors);
         ratingBar.setProgressTintList(colorStateList);
         ratingBar.setOnRatingChangeListener(new MaterialRatingBar.OnRatingChangeListener() {
@@ -132,6 +142,10 @@ public class MoviePreview extends YouTubeBaseActivity {
             public void onRatingChanged(MaterialRatingBar ratingBar, float rating) {
                 Log.d("rating changed",rating+"");
                 ratingView.setText(rating+"");
+                Preferences.rateMovie(MoviePreview.this,tmdb_id,rating+"");
+                if (Preferences.getNoOfRatedMovies(MoviePreview.this) == 5 ){
+                    startActivity(new Intent(MoviePreview.this, GetRecommendations.class));
+                }
             }
         });
 
@@ -141,6 +155,39 @@ public class MoviePreview extends YouTubeBaseActivity {
                 playVideo(trailerpath);
             }
         });
+
+        if (Preferences.isFavourite(MoviePreview.this,tmdb_id)){
+            favourite.setLiked(true);
+        }else favourite.setLiked(false);
+        if (Preferences.isWatchList(MoviePreview.this,tmdb_id)){
+            watchlist.setLiked(true);
+        }else watchlist.setLiked(false);
+
+        favourite.setOnLikeListener(new OnLikeListener() {
+            @Override
+            public void liked(LikeButton likeButton) {
+                Preferences.addToFavourite(MoviePreview.this,tmdb_id);
+            }
+
+            @Override
+            public void unLiked(LikeButton likeButton) {
+                Preferences.removeFromFavourite(MoviePreview.this,tmdb_id);
+            }
+        });
+
+
+        watchlist.setOnLikeListener(new OnLikeListener() {
+            @Override
+            public void liked(LikeButton likeButton) {
+                Preferences.addToWatchList(MoviePreview.this,tmdb_id);
+            }
+
+            @Override
+            public void unLiked(LikeButton likeButton) {
+                Preferences.removeFromWatchList(MoviePreview.this,tmdb_id);
+            }
+        });
+
 
         RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(MoviePreview.this,
                 LinearLayoutManager.HORIZONTAL,false);

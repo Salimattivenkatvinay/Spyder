@@ -3,11 +3,23 @@ package com.vinay.spyder.utils;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.maksim88.easylogin.AccessToken;
+
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 
 import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -67,18 +79,54 @@ public class Preferences {
     public static void rateMovie(Context context, String tmdb_id, String rating){
         SharedPreferences preferences = context.getSharedPreferences("ratings",Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        Set<String> ratings = preferences.getStringSet("ratedmovies",null);
-        if (ratings == null) ratings = new HashSet<>();
-        else {
-            for (int i =0; i<=10; i++){
-                if (ratings.contains(tmdb_id+"="+i/2.0))
-                    return;
-            }
+        Set<String> movies = preferences.getStringSet("ratedmovies",null);
+        Set<String> ratings = preferences.getStringSet("ratedratings",null);
+        if (movies == null) {
+            ratings = new HashSet<>();
+            movies = new HashSet<>();
+            increaseNoOfRatedMovies(context);
         }
-        ratings.add(tmdb_id + "=" + rating);
+        else if (movies.contains(tmdb_id)) {
+            for (int i=0; i<movies.size();i++){
+                if(movies.toArray()[i].equals(tmdb_id)){
+                    movies.remove(i);
+                    ratings.remove(i);
+                }
+            }
+        }else {
+            increaseNoOfRatedMovies(context);
+        }
+        movies.add(tmdb_id);
+        ratings.add(rating);
         editor.putStringSet("ratedmovies",ratings);
         editor.apply();
-        increaseNoOfRatedMovies(context);
+    }
+
+    public static ArrayList<String> getTopRatedMovies(Context context){
+        ArrayList<String> topmovies = new ArrayList<>();
+        SharedPreferences preferences = context.getSharedPreferences("ratings",Context.MODE_PRIVATE);
+        Set<String> movies = preferences.getStringSet("ratedmovies",null);
+        Set<String> ratings = preferences.getStringSet("ratedratings",null);
+        if (movies == null) {
+            return null;
+        }
+        for (int i=0; i<ratings.size(); i++ ){
+            if(Float.compare(Float.parseFloat(ratings.toArray()[i].toString()),0.25f)>=0){
+                topmovies.add(movies.toArray()[i].toString());
+                if (topmovies.size()==3) break;
+            }
+        }
+        if (topmovies!=null && topmovies.size() >0){
+
+        }else {
+            topmovies.addAll(movies);
+            if (movies.size()>3)
+                topmovies.subList(0,2);
+            else
+                topmovies.subList(0,movies.size()-1);
+        }
+
+        return topmovies;
     }
 
 
@@ -104,6 +152,48 @@ public class Preferences {
         editor.apply();
     }
 
+    public static void removeFromFavourite(Context context,String tmdb_id){
+        SharedPreferences preferences = context.getSharedPreferences("userlist",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        Set<String> movies = preferences.getStringSet("favourite",null);
+        if (movies != null && movies.contains(tmdb_id)){
+            movies.remove(tmdb_id);
+        }
+        editor.putStringSet("watch",movies);
+        editor.apply();
+    }
+
+    public static boolean isFavourite(Context context, String tmdb_id){
+        SharedPreferences preferences = context.getSharedPreferences("userlist",Context.MODE_PRIVATE);
+        Set<String> movies = preferences.getStringSet("favourite",null);
+        if (movies != null && movies.contains(tmdb_id)){
+            return true;
+        }
+        return false;
+    }
+
+
+    public static boolean isWatchList(Context context, String tmdb_id){
+        SharedPreferences preferences = context.getSharedPreferences("userlist",Context.MODE_PRIVATE);
+        Set<String> movies = preferences.getStringSet("watch",null);
+        if (movies != null && movies.contains(tmdb_id)){
+            return true;
+        }
+        return false;
+    }
+
+    public static void removeFromWatchList(Context context,String tmdb_id){
+        SharedPreferences preferences = context.getSharedPreferences("userlist",Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        Set<String> movies = preferences.getStringSet("watch",null);
+        if (movies != null && movies.contains(tmdb_id)){
+            movies.remove(tmdb_id);
+        }
+        editor.putStringSet("watch",movies);
+        editor.apply();
+    }
+
+
     public static ArrayList<String> getFavourites(Context context){
         SharedPreferences preferences = context.getSharedPreferences("userlist",Context.MODE_PRIVATE);
         Set<String> movies = preferences.getStringSet("favourite",null);
@@ -119,7 +209,7 @@ public class Preferences {
 
     public static ArrayList<String> getWatchList(Context context){
         SharedPreferences preferences = context.getSharedPreferences("userlist",Context.MODE_PRIVATE);
-        Set<String> movies = preferences.getStringSet("favourite",null);
+        Set<String> movies = preferences.getStringSet("watch",null);
         if (movies == null){
             return null;
         }else {

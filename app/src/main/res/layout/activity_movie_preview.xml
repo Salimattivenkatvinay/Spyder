@@ -72,6 +72,39 @@
                         android:gravity="center"
                         android:text="0.0"
                         android:textSize="20sp" />
+
+                    <com.like.LikeButton
+                        app:icon_type="heart"
+                        android:layout_marginStart="10dp"
+                        app:circle_start_color="@android:color/white"
+                        app:dots_primary_color="@android:color/darker_gray"
+                        app:dots_secondary_color="@android:color/white"
+                        app:circle_end_color="@android:color/darker_gray"
+                        app:icon_size="25sp"
+                        android:gravity="bottom"
+                        app:liked="true"
+                        app:anim_scale_factor="2"
+                        app:is_enabled="true"
+                        android:id="@+id/fav"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content" />
+
+                    <com.like.LikeButton
+                        android:layout_marginStart="10dp"
+                        app:circle_start_color="@android:color/white"
+                        app:dots_primary_color="@android:color/darker_gray"
+                        app:dots_secondary_color="@android:color/white"
+                        app:circle_end_color="@android:color/darker_gray"
+                        app:icon_size="25sp"
+                        android:gravity="bottom"
+                        app:liked="true"
+                        app:anim_scale_factor="2"
+                        app:is_enabled="true"
+                        android:id="@+id/watch"
+                        app:like_drawable="@drawable/ic_ondemand_video_white_24dp"
+                        app:unlike_drawable="@drawable/ic_ondemand_video_black_24dp"
+                        android:layout_height="wrap_content"
+                        android:layout_width="wrap_content" />
                 </LinearLayout>
 
                 <TextView
