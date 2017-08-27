@@ -9,10 +9,14 @@ import android.graphics.Color;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -30,12 +34,15 @@ import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerFragment;
 import com.vinay.spyder.R;
+import com.vinay.spyder.utils.CrewItem;
 
 import net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 import me.zhanghai.android.materialratingbar.MaterialRatingBar;
 
@@ -55,15 +62,22 @@ public class MoviePreview extends YouTubeBaseActivity {
     ImageView posterView,backdropView;
     TextView taglineView,yearView,genresView,langView,voteView,revenueView,ratingView,overviewView;
     CollapsingToolbarLayout collapsingToolbarLayout;
+    ArrayList<CrewItem> castList = new ArrayList<>();
+    ArrayList<CrewItem> crewList = new ArrayList<>();
+
+    RecyclerView castView, crewView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_preview);
-        tmdb_id = "672";
         pb = new ProgressDialog(MoviePreview.this);
         pb.setMessage("Loading...");
-        getMovieData();
+        pb.setCancelable(false);
+        if (getIntent()!=null && getIntent().getStringExtra("tmdbId")!=null){
+            tmdb_id = getIntent().getStringExtra("tmdbId");
+            getMovieData();
+        }
     }
     private int[][] states = new int[][] {
             new int[] {android.R.attr.state_checked}, // checked
@@ -86,6 +100,8 @@ public class MoviePreview extends YouTubeBaseActivity {
         ratingView = findViewById(R.id.userrating);
         floatingActionButton = findViewById(R.id.fab);
         overviewView = findViewById(R.id.overview);
+        castView = findViewById(R.id.cast_recycler);
+        crewView = findViewById(R.id.crew_recycler);
 
         collapsingToolbarLayout.setTitle(title);
         taglineView.setText(tagline);
@@ -125,6 +141,28 @@ public class MoviePreview extends YouTubeBaseActivity {
                 playVideo(trailerpath);
             }
         });
+
+        RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(MoviePreview.this,
+                LinearLayoutManager.HORIZONTAL,false);
+        RecyclerView.LayoutManager layoutManager1=new LinearLayoutManager(MoviePreview.this,
+                LinearLayoutManager.HORIZONTAL,false);
+        crewView.setLayoutManager(layoutManager);
+        castView.setLayoutManager(layoutManager1);
+
+        crewView.setAdapter(new CrewAdapter(crewList));
+        castView.setAdapter(new CrewAdapter(castList));
+        findViewById(R.id.youtubefrag).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (playerFragment!=null){
+                    findViewById(R.id.youtubefrag).setVisibility(View.GONE);
+                    FragmentTransaction ft = getFragmentManager().beginTransaction();
+                    ft.remove(playerFragment);
+                    ft.commit();
+                }
+            }
+        });
+
     }
 
     private void playVideo(final String key) {
@@ -154,7 +192,7 @@ public class MoviePreview extends YouTubeBaseActivity {
 
     @Override
     public void onBackPressed() {
-        if (playerFragment==null)
+        if (playerFragment==null || !playerFragment.isVisible())
             super.onBackPressed();
         else {
             findViewById(R.id.youtubefrag).setVisibility(View.GONE);
@@ -165,6 +203,7 @@ public class MoviePreview extends YouTubeBaseActivity {
     }
 
     private void getMovieData() {
+        pb.setMessage("loading Movie data");
         pb.show();
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = "http://api.themoviedb.org/3/movie/" + tmdb_id + "?api_key=7e8f60e325cd06e164799af1e317d7a7";
@@ -213,13 +252,13 @@ public class MoviePreview extends YouTubeBaseActivity {
     }
 
     private void getTrailerPath() {
+        pb.setMessage("loading Trailer Data");
         RequestQueue queue = Volley.newRequestQueue(this);
         String url = "http://api.themoviedb.org/3/movie/"+tmdb_id+"/videos?api_key=7e8f60e325cd06e164799af1e317d7a7";
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        pb.dismiss();
                         try {
                             JSONObject json = new JSONObject(response);
                             JSONArray jsonArray = json.getJSONArray("results");
@@ -230,7 +269,47 @@ public class MoviePreview extends YouTubeBaseActivity {
                                     trailerpath = object.getString("key");
                                 }
                             }
+                            getCrewData();
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                pb.dismiss();
+                Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
+        queue.add(stringRequest);
+    }
 
+    private void getCrewData(){
+        pb.setMessage("loading Crew and Cast");
+        RequestQueue queue = Volley.newRequestQueue(this);
+        String url = "http://api.themoviedb.org/3/movie/"+tmdb_id+"/casts?api_key=7e8f60e325cd06e164799af1e317d7a7";
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        pb.dismiss();
+                        try {
+                            JSONObject json = new JSONObject(response);
+                            JSONArray cast = json.getJSONArray("cast");
+                            for (int i=0; i< cast.length(); i++) {
+                                JSONObject object=cast.getJSONObject(i);
+                                CrewItem item = new CrewItem(object.getString("name"),object.getString("id"),
+                                        object.getString("character"),object.getString("profile_path"));
+                                castList.add(item);
+                            }
+
+                            JSONArray crew = json.getJSONArray("crew");
+                            for (int i=0; i< crew.length(); i++) {
+                                JSONObject object=crew.getJSONObject(i);
+                                CrewItem item = new CrewItem(object.getString("name"),object.getString("id"),
+                                        object.getString("job"),object.getString("profile_path"));
+                                crewList.add(item);
+                            }
                             setupUI();
 
                         } catch (JSONException e) {
@@ -245,6 +324,47 @@ public class MoviePreview extends YouTubeBaseActivity {
             }
         });
         queue.add(stringRequest);
+    }
+
+    class CrewAdapter extends RecyclerView.Adapter<CrewAdapter.Myholder>{
+        ArrayList<CrewItem> crewItems = new ArrayList<>();
+
+        CrewAdapter(ArrayList<CrewItem> crewItems){
+            this.crewItems = crewItems;
+        }
+
+        class Myholder extends RecyclerView.ViewHolder{
+            TextView titleView;
+            ImageView imageView;
+
+            public Myholder(View itemView) {
+                super(itemView);
+                titleView = itemView.findViewById(R.id.title);
+                imageView = itemView.findViewById(R.id.image);
+            }
+        }
+
+        @Override
+        public Myholder onCreateViewHolder(ViewGroup parent, int viewType) {
+            View itemView = LayoutInflater.from(parent.getContext())
+                    .inflate(R.layout.item_crew, parent, false);
+
+            return new Myholder(itemView);
+        }
+
+        @Override
+        public void onBindViewHolder(Myholder holder, int position) {
+            holder.titleView.setText(crewItems.get(position).getName() + "\n" + crewItems.get(position).getRole());
+            Glide.with(MoviePreview.this)
+                    .load("http://image.tmdb.org/t/p/w185"+crewItems.get(position).getProfile_path())
+                    .into(holder.imageView);
+        }
+
+        @Override
+        public int getItemCount() {
+            return crewItems.size();
+        }
+
     }
 
 }

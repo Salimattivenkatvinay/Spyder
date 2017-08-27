@@ -2,6 +2,7 @@ package com.vinay.spyder.activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -39,6 +40,7 @@ public class LoginActivity extends AppCompatActivity implements OnLoginCompleteL
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         EasyLogin.initialize();
         easyLogin = EasyLogin.getInstance();
         setContentView(R.layout.activity_login);
@@ -136,7 +138,8 @@ public class LoginActivity extends AppCompatActivity implements OnLoginCompleteL
             progressDialog.setCancelable(false);
             String url = "https://whencutwini.000webhostapp.com/spyder/sign_up.php?" +
                     "email=" + token.getEmail() + "&" +
-                    "password=" + token.getToken();
+                    "password=" + token.getUserId();
+            Log.d("userId",token.getUserId());
 
             RequestQueue requestQueue = Volley.newRequestQueue(LoginActivity.this);
             StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
@@ -157,7 +160,7 @@ public class LoginActivity extends AppCompatActivity implements OnLoginCompleteL
             });
             requestQueue.add(stringRequest);
             gPlusButton.setEnabled(false);
-            Preferences.saveCredentials(LoginActivity.this, token.getEmail(), token.getToken());
+            Preferences.saveCredentials(LoginActivity.this, token.getEmail(), token.getUserId());
         }
         updateStatuses();
     }

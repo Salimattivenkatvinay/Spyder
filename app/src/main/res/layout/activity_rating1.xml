@@ -1,28 +1,47 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
-    android:id="@+id/root_layout"
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<com.mxn.soul.flowingdrawer_core.FlowingDrawer
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/drawerlayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@drawable/android_gradient_list">
+    android:clipChildren="false"
+    android:clipToPadding="false"
+    app:edPosition="1"
+    app:edMenuSize="260dp"
+    app:edMenuBackground="@color/dark_transp">
 
-
-    <Button
-        android:id="@+id/btn_next"
-        android:layout_width="75dp"
-        android:layout_height="40dp"
-        android:text="Button"
-        android:background="@drawable/next_shape"
-        android:layout_alignParentEnd="true"/>
-
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/rv_movies"
-        android:layout_height="match_parent"
+    <!--content-->
+    <RelativeLayout
+        android:id="@+id/root_layout"
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:orientation="vertical"
         android:layout_width="match_parent"
-        android:layout_below="@id/btn_next"
-        />
+        android:layout_height="match_parent">
 
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            app:layout_collapseMode="pin"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
-</RelativeLayout>
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/rv_movies"
+            android:layout_height="match_parent"
+            android:layout_width="match_parent"
+            />
+    </RelativeLayout>
+
+    <!--menu-->
+    <com.mxn.soul.flowingdrawer_core.FlowingMenuLayout
+        android:id="@+id/menulayout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <include layout="@layout/drawer"/>
+
+    </com.mxn.soul.flowingdrawer_core.FlowingMenuLayout>
+
+</com.mxn.soul.flowingdrawer_core.FlowingDrawer>

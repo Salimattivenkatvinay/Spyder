@@ -16,7 +16,7 @@ public class AskToRate extends AppCompatActivity {
         findViewById(R.id.proceed).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(AskToRate.this,MoviePreview.class));
+                startActivity(new Intent(AskToRate.this,RatingActivity.class));
             }
         });
     }

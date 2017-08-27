@@ -48,6 +48,7 @@ public class SplashScreen extends AppCompatActivity {
                 startActivity(new Intent(SplashScreen.this,RatingActivity.class));
             }else {
                 startActivity(new Intent(SplashScreen.this,AskToRate.class));
+                finish();
             }
         }
     }
