@@ -21,4 +21,5 @@
     <color name="orange">#ff5722</color>
     <color name="brown">#795548</color>
 
+    <color name="dark_transp">#50000000</color>
 </resources>

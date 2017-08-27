@@ -1,10 +1,18 @@
 package com.vinay.spyder.activities;
 
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
-import android.support.design.widget.CollapsingToolbarLayout;
+import android.content.res.ColorStateList;
+import android.graphics.Bitmap;
+import android.graphics.Color;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.view.MotionEvent;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -17,34 +25,55 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.google.android.youtube.player.YouTubeBaseActivity;
+import com.google.android.youtube.player.YouTubeInitializationResult;
+import com.google.android.youtube.player.YouTubePlayer;
+import com.google.android.youtube.player.YouTubePlayerFragment;
 import com.vinay.spyder.R;
+
+import net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class MoviePreview extends AppCompatActivity {
+import me.zhanghai.android.materialratingbar.MaterialRatingBar;
+
+import static android.provider.MediaStore.Video.Thumbnails.VIDEO_ID;
+
+public class MoviePreview extends YouTubeBaseActivity {
 
     String title,tagline,year,genres="",language,imdb_id,overview,
             posterpath,backdroppath,trailerpath,is_adult,voteavg,revenue;
     String tmdb_id;
-
+    MaterialRatingBar ratingBar;
+    float rate = 0.0f;
     ProgressDialog pb;
+    YouTubePlayerFragment playerFragment;
+    FloatingActionButton floatingActionButton;
 
     ImageView posterView,backdropView;
-    TextView taglineView,yearView,genresView,langView,voteView,revenueView;
+    TextView taglineView,yearView,genresView,langView,voteView,revenueView,ratingView,overviewView;
     CollapsingToolbarLayout collapsingToolbarLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_preview);
-        tmdb_id = "155";
+        tmdb_id = "672";
         pb = new ProgressDialog(MoviePreview.this);
         pb.setMessage("Loading...");
         getMovieData();
     }
+    private int[][] states = new int[][] {
+            new int[] {android.R.attr.state_checked}, // checked
+            new int[] {-android.R.attr.state_checked}, // unchecked
+    };
 
+    private int[] colors = new int[] {
+            Color.GREEN, // checked
+            Color.YELLOW // unchecked set default in onCreate
+    };
     private void setupUI() {
         collapsingToolbarLayout = findViewById(R.id.collapsingToolbar);
         taglineView = findViewById(R.id.tagline);
@@ -53,11 +82,16 @@ public class MoviePreview extends AppCompatActivity {
         voteView = findViewById(R.id.tmdb_rating);
         posterView = findViewById(R.id.poster);
         backdropView = findViewById(R.id.backdrop);
+        ratingBar = findViewById(R.id.ratingbar);
+        ratingView = findViewById(R.id.userrating);
+        floatingActionButton = findViewById(R.id.fab);
+        overviewView = findViewById(R.id.overview);
 
         collapsingToolbarLayout.setTitle(title);
         taglineView.setText(tagline);
         genresView.setText(genres);
         voteView.setText(voteavg);
+        overviewView.setText(overview);
 
         DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
@@ -70,11 +104,64 @@ public class MoviePreview extends AppCompatActivity {
                 .load("http://image.tmdb.org/t/p/w185"+posterpath)
                 .into(posterView);
 
-
         Glide.with(MoviePreview.this)
                 .load("http://image.tmdb.org/t/p/w342"+backdroppath)
                 .into(backdropView);
 
+        ratingBar.setNumStars(5);
+        ColorStateList colorStateList = new ColorStateList(states,colors);
+        ratingBar.setProgressTintList(colorStateList);
+        ratingBar.setOnRatingChangeListener(new MaterialRatingBar.OnRatingChangeListener() {
+            @Override
+            public void onRatingChanged(MaterialRatingBar ratingBar, float rating) {
+                Log.d("rating changed",rating+"");
+                ratingView.setText(rating+"");
+            }
+        });
+
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                playVideo(trailerpath);
+            }
+        });
+    }
+
+    private void playVideo(final String key) {
+        FragmentManager fm = getFragmentManager();
+        String tag = YouTubePlayerFragment.class.getSimpleName();
+        playerFragment = (YouTubePlayerFragment) fm.findFragmentByTag(tag);
+        if (playerFragment == null) {
+            FragmentTransaction ft = fm.beginTransaction();
+            playerFragment = YouTubePlayerFragment.newInstance();
+            ft.add(R.id.youtubefrag, playerFragment, tag);
+            findViewById(R.id.youtubefrag).setVisibility(View.VISIBLE);
+            ft.commit();
+        }
+
+        playerFragment.initialize("AIzaSyD_OzuWiyifQ8zzd6cLnL4X1v7WEo80dgI", new YouTubePlayer.OnInitializedListener() {
+            @Override
+            public void onInitializationSuccess(YouTubePlayer.Provider provider, YouTubePlayer youTubePlayer, boolean b) {
+                youTubePlayer.loadVideo(key);
+            }
+
+            @Override
+            public void onInitializationFailure(YouTubePlayer.Provider provider, YouTubeInitializationResult youTubeInitializationResult) {
+                Toast.makeText(MoviePreview.this, "Error while initializing YouTubePlayer.", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (playerFragment==null)
+            super.onBackPressed();
+        else {
+            findViewById(R.id.youtubefrag).setVisibility(View.GONE);
+            FragmentTransaction ft = getFragmentManager().beginTransaction();
+            ft.remove(playerFragment);
+            ft.commit();
+        }
     }
 
     private void getMovieData() {

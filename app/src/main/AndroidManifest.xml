@@ -29,7 +29,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".activities.SignUpActivity" />
-        <activity android:name=".activities.MoviePreview"></activity>
+        <activity android:name=".activities.MoviePreview"
+            android:configChanges="keyboardHidden|orientation|screenSize"/>
     </application>
 
 </manifest>
