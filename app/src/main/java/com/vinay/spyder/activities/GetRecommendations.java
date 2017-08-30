@@ -39,7 +39,7 @@ public class GetRecommendations extends AppCompatActivity {
                 if (true) {
                     //Collections.sort(topmovies);
                     final ArrayList<String> similarmovies = new ArrayList<>();
-                    String url = "https://www.themoviedb.org/movie/155";
+                    String url = "https://www.themoviedb.org/movie/"+getIntent().getExtras().getString("mvid","155");
                     RequestQueue requestQueue = Volley.newRequestQueue(GetRecommendations.this);
                     StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
                         @Override

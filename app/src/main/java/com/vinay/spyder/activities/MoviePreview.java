@@ -146,7 +146,7 @@ public class MoviePreview extends YouTubeBaseActivity {
                /* if (Preferences.getNoOfRatedMovies(MoviePreview.this) == 5 ){
                     startActivity(new Intent(MoviePreview.this, GetRecommendations.class));
                 }*/
-                startActivity(new Intent(MoviePreview.this, GetRecommendations.class));
+                startActivity(new Intent(MoviePreview.this, GetRecommendations.class).putExtra("mvid",tmdb_id));
             }
         });
 
