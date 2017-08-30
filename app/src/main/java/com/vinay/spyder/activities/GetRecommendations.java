@@ -3,6 +3,7 @@ package com.vinay.spyder.activities;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -34,11 +35,11 @@ public class GetRecommendations extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 final Intent intent = new Intent(GetRecommendations.this, RatingActivity.class);
-                ArrayList<String> topmovies = Preferences.getTopRatedMovies(GetRecommendations.this);
-                if (topmovies != null && topmovies.size() > 0) {
-                    Collections.sort(topmovies);
+//                ArrayList<String> topmovies = Preferences.getTopRatedMovies(GetRecommendations.this);
+                if (true) {
+                    //Collections.sort(topmovies);
                     final ArrayList<String> similarmovies = new ArrayList<>();
-                    String url = "https://www.themoviedb.org/movie/" + topmovies.get(topmovies.size() - 1);
+                    String url = "https://www.themoviedb.org/movie/155";
                     RequestQueue requestQueue = Volley.newRequestQueue(GetRecommendations.this);
                     StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
                         @Override
@@ -48,9 +49,10 @@ public class GetRecommendations extends AppCompatActivity {
                             for (Element l : content) {
                                 Elements link = l.getElementsByClass("image_content");
                                 Elements w = link.get(0).getElementsByTag("a");
-                                similarmovies.add(w.get(0).attr("href").substring(6));
+                                similarmovies.add(w.get(0).attr("href").substring(7));
                             }
                             if (similarmovies != null && similarmovies.size() > 0) {
+                                Log.e("key",similarmovies.toString());
 
                                 intent.putStringArrayListExtra("showingList", similarmovies);
 

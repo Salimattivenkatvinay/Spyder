@@ -143,9 +143,10 @@ public class MoviePreview extends YouTubeBaseActivity {
                 Log.d("rating changed",rating+"");
                 ratingView.setText(rating+"");
                 Preferences.rateMovie(MoviePreview.this,tmdb_id,rating+"");
-                if (Preferences.getNoOfRatedMovies(MoviePreview.this) == 5 ){
+               /* if (Preferences.getNoOfRatedMovies(MoviePreview.this) == 5 ){
                     startActivity(new Intent(MoviePreview.this, GetRecommendations.class));
-                }
+                }*/
+                startActivity(new Intent(MoviePreview.this, GetRecommendations.class));
             }
         });
 

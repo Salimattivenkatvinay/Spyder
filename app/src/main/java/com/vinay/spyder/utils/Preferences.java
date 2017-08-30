@@ -90,14 +90,18 @@ public class Preferences {
             for (int i=0; i<movies.size();i++){
                 if(movies.toArray()[i].equals(tmdb_id)){
                     movies.remove(i);
-                    ratings.remove(i);
+                    if (ratings != null) {
+                        ratings.remove(i);
+                    }
                 }
             }
         }else {
             increaseNoOfRatedMovies(context);
         }
         movies.add(tmdb_id);
-        ratings.add(rating);
+        if (ratings != null) {
+            ratings.add(rating);
+        }
         editor.putStringSet("ratedmovies",ratings);
         editor.apply();
     }
