@@ -5,17 +5,14 @@ import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
 import android.graphics.Color;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -49,8 +46,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import me.zhanghai.android.materialratingbar.MaterialRatingBar;
-
-import static android.provider.MediaStore.Video.Thumbnails.VIDEO_ID;
 
 public class MoviePreview extends YouTubeBaseActivity {
 
@@ -143,10 +138,10 @@ public class MoviePreview extends YouTubeBaseActivity {
                 Log.d("rating changed",rating+"");
                 ratingView.setText(rating+"");
                 Preferences.rateMovie(MoviePreview.this,tmdb_id,rating+"");
-               /* if (Preferences.getNoOfRatedMovies(MoviePreview.this) == 5 ){
+               if (Preferences.getNoOfRatedMovies(MoviePreview.this) == 5 ){
                     startActivity(new Intent(MoviePreview.this, GetRecommendations.class));
-                }*/
-                startActivity(new Intent(MoviePreview.this, GetRecommendations.class).putExtra("mvid",tmdb_id));
+                }
+                //startActivity(new Intent(MoviePreview.this, GetRecommendations.class).putExtra("mvid",tmdb_id));
             }
         });
 

@@ -1,5 +1,6 @@
 package com.vinay.spyder.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -14,6 +15,7 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.vinay.spyder.R;
+import com.vinay.spyder.utils.Preferences;
 
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
@@ -28,16 +30,19 @@ public class GetRecommendations extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_get_recommendations);
-
+        final ProgressDialog progressDialog=new ProgressDialog(GetRecommendations.this);
+        progressDialog.setMessage("loading");
+        //progressDialog.setCancelable(false);
         findViewById(R.id.proceed).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                progressDialog.show();
                 final Intent intent = new Intent(GetRecommendations.this, RatingActivity.class);
-//                ArrayList<String> topmovies = Preferences.getTopRatedMovies(GetRecommendations.this);
-                if (true) {
+                ArrayList<String> topmovies = Preferences.getTopRatedMovies(GetRecommendations.this);
+                if (topmovies!=null && !topmovies.isEmpty()) {
                     //Collections.sort(topmovies);
                     final ArrayList<String> similarmovies = new ArrayList<>();
-                    String url = "https://www.themoviedb.org/movie/"+getIntent().getExtras().getString("mvid","155");
+                    String url = "https://www.themoviedb.org/movie/"+topmovies.get(0);//+getIntent().getExtras().getString("mvid","155");
                     RequestQueue requestQueue = Volley.newRequestQueue(GetRecommendations.this);
                     StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
                         @Override
@@ -51,6 +56,7 @@ public class GetRecommendations extends AppCompatActivity {
                             }
                             if (similarmovies != null && similarmovies.size() > 0) {
                                 Log.e("key",similarmovies.toString());
+                                progressDialog.hide();
 
                                 intent.putStringArrayListExtra("showingList", similarmovies);
 
@@ -60,6 +66,7 @@ public class GetRecommendations extends AppCompatActivity {
                     }, new Response.ErrorListener() {
                         @Override
                         public void onErrorResponse(VolleyError error) {
+                            progressDialog.hide();
                             Toast.makeText(GetRecommendations.this, "Failed to load Recommendations", Toast.LENGTH_SHORT).show();
                         }
                     });

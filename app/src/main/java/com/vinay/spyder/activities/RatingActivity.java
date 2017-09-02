@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -46,10 +47,12 @@ public class RatingActivity extends AppCompatActivity {
     RecyclerView rv_movie;
     ArrayList<String> mvieId=new ArrayList<>();
     ImageView userPic;
+    View view;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rating1);
+        view=findViewById(R.id.root_layout);
 
         if (getIntent()!=null && getIntent().getStringArrayListExtra("showingList")!=null){
             mvieId = getIntent().getStringArrayListExtra("showingList");
@@ -100,7 +103,7 @@ public class RatingActivity extends AppCompatActivity {
     private void getRecommended() {
         ArrayList<String> topmovies = Preferences.getTopRatedMovies(RatingActivity.this);
         if (topmovies!=null && topmovies.size()>0) {
-            Collections.sort(topmovies);
+            //Collections.sort(topmovies);
             final ArrayList<String> similarmovies = new ArrayList<>();
             String url = "https://www.themoviedb.org/movie/" + topmovies.get(topmovies.size()-1);
             RequestQueue requestQueue = Volley.newRequestQueue(RatingActivity.this);
