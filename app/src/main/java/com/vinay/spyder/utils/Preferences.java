@@ -61,6 +61,24 @@ public class Preferences {
         return preferences.getInt("no_of_rated_movies", 0);
     }
 
+    public static int getRating(Context context, String tmdb_id){
+        TinyDB tinyDB=new TinyDB(context);
+        ArrayList<LinkedTreeMap<String, String>> movies = tinyDB.getObject("ratedmovies", ArrayList.class);
+        if (movies==null) {
+            return 0;
+        } else {
+            boolean flag = true;
+            for (LinkedTreeMap curMap : movies) {
+                //If this map has the object, that is the key doesn't return a null object
+                if ((tmdb_id.equals((String) curMap.get("movie")))) {
+                    //Stop traversing because we are done
+                    return (int)Float.parseFloat(String.valueOf(curMap.get("rating")));
+                }
+            }
+        }
+        return 0;
+    }
+
     public static void rateMovie(Context context, String tmdb_id, String rating) {
         TinyDB tinyDB=new TinyDB(context);
         ArrayList<LinkedTreeMap<String, String>> movies = tinyDB.getObject("ratedmovies", ArrayList.class);
@@ -92,6 +110,7 @@ public class Preferences {
                 v.put("movie", tmdb_id);
                 v.put("rating", rating);
                 movies.add(v);
+                increaseNoOfRatedMovies(context);
             }
         }
         tinyDB.putObject("ratedmovies",movies);

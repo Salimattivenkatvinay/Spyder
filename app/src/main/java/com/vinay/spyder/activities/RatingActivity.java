@@ -1,5 +1,6 @@
 package com.vinay.spyder.activities;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.ColorStateList;
@@ -142,12 +143,17 @@ public class RatingActivity extends AppCompatActivity
     }
 
     private void getRecommended() {
-        ArrayList<String> topmovies = Preferences.getTopRatedMovies(RatingActivity.this);
-        if (topmovies != null && topmovies.size() > 0) {
+        final ProgressDialog progressDialog=new ProgressDialog(RatingActivity.this);
+        progressDialog.setMessage("loading");
+        progressDialog.setCancelable(false);
+        progressDialog.show();
+        ArrayList<String> topmovies = Preferences.getTopRatedMovies(this);
+        if (topmovies!=null && !topmovies.isEmpty()) {
             //Collections.sort(topmovies);
             final ArrayList<String> similarmovies = new ArrayList<>();
-            String url = "https://www.themoviedb.org/movie/" + topmovies.get(topmovies.size() - 1);
-            RequestQueue requestQueue = Volley.newRequestQueue(RatingActivity.this);
+
+            String url = "https://www.themoviedb.org/movie/"+topmovies.get(0);//+getIntent().getExtras().getString("mvid","155");
+            RequestQueue requestQueue = Volley.newRequestQueue(this);
             StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
                 @Override
                 public void onResponse(String response) {
@@ -156,21 +162,21 @@ public class RatingActivity extends AppCompatActivity
                     for (Element l : content) {
                         Elements link = l.getElementsByClass("image_content");
                         Elements w = link.get(0).getElementsByTag("a");
-                        similarmovies.add(w.get(0).attr("href").substring(6));
+                        similarmovies.add(w.get(0).attr("href").substring(7));
                     }
                     if (similarmovies != null && similarmovies.size() > 0) {
+                        Log.e("key",similarmovies.toString());
+                        progressDialog.dismiss();
 
-                        if (null != getSupportActionBar())
-                            getSupportActionBar().setTitle("Recommended");
                         mvieId = similarmovies;
-                        if (rv_movie != null)
-                            rv_movie.getAdapter().notifyDataSetChanged();
+                        rv_movie.getAdapter().notifyDataSetChanged();
                     }
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
-
+                    progressDialog.dismiss();
+                    Toast.makeText(RatingActivity.this, "Failed to load Recommendations", Toast.LENGTH_SHORT).show();
                 }
             });
             requestQueue.add(stringRequest);
@@ -370,7 +376,10 @@ public class RatingActivity extends AppCompatActivity
                                 getWindowManager().getDefaultDisplay().getMetrics(metrics);
                                 RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(metrics.widthPixels,(int)(0.56*metrics.widthPixels));
                                 holder.backdropView.setLayoutParams(layoutParams);
-                                holder.yearView.setText(dataBaseHelper.getYear(mvieId.get(position)));//"year : " + json.getString("release_date").substring(0,4));
+                                if (dataBaseHelper!=null)
+                                    holder.yearView.setText(dataBaseHelper.getYear(mvieId.get(position)));//"year : " + json.getString("release_date").substring(0,4));
+                                else
+                                    holder.yearView.setText("year : " + json.getString("release_date").substring(0,4));
 
                                 Glide.with(RatingActivity.this)
                                         .load("http://image.tmdb.org/t/p/w185"+json.getString("poster_path"))
@@ -381,14 +390,15 @@ public class RatingActivity extends AppCompatActivity
                                         .into(holder.backdropView);
 
                                 holder.ratingBar.setNumStars(5);
-
+                                holder.ratingBar.setRating(Preferences.getRating(RatingActivity.this,mvieId.get(position)));
                                 ColorStateList colorStateList = new ColorStateList(states,colors);
                                 holder.ratingBar.setProgressTintList(colorStateList);
                                 holder.ratingBar.setOnRatingChangeListener(new MaterialRatingBar.OnRatingChangeListener() {
                                     @Override
                                     public void onRatingChanged(MaterialRatingBar ratingBar, float rating) {
                                         Log.d("rating changed",rating+"");
-                                        holder.userRatingView.setText(rating+"");Preferences.rateMovie(RatingActivity.this,mvieId.get(position),rating+"");
+                                        holder.userRatingView.setText(rating+"");
+                                        Preferences.rateMovie(RatingActivity.this,mvieId.get(position),rating+"");
                                         if (Preferences.getNoOfRatedMovies(RatingActivity.this) == 5 ){
                                             startActivity(new Intent(RatingActivity.this, GetRecommendations.class));
                                         }

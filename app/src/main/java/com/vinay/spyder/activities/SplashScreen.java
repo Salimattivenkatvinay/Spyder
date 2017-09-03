@@ -47,7 +47,7 @@ public class SplashScreen extends AppCompatActivity {
         }
         else {
             if (com.vinay.spyder.utils.Preferences.isIntialRated(SplashScreen.this)){
-                startActivity(new Intent(SplashScreen.this,RatingActivity.class));
+                startActivity(new Intent(SplashScreen.this,GetRecommendations.class));
             }else {
                 startActivity(new Intent(SplashScreen.this,AskToRate.class));
                 finish();
