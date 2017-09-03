@@ -150,6 +150,20 @@ public class Preferences {
         }
     }
 
+    public static ArrayList<String> getRatedMovies(Context context) {
+        ArrayList<String> topmovies = new ArrayList<>();
+        TinyDB tinyDB=new TinyDB(context);
+        ArrayList<LinkedTreeMap<String, String>> movies = tinyDB.getObject("ratedmovies", ArrayList.class);
+        if (movies == null) {
+            return null;
+        }
+        for (int i = 0; i < movies.size(); i++) {
+            if (Float.compare(Float.parseFloat(movies.get(i).get("rating")), 2.5f) >= 0) {
+                topmovies.add(movies.get(i).get("movie"));
+            }
+        }
+        return topmovies;
+    }
 
     public static void addToFavourite(Context context, String tmdb_id) {
         SharedPreferences preferences = context.getSharedPreferences("userlist", Context.MODE_PRIVATE);

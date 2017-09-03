@@ -78,30 +78,7 @@ public class RatingActivity extends AppCompatActivity
         view=findViewById(R.id.root_layout);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        if (getIntent() != null && getIntent().getStringArrayListExtra("showingList") != null) {
-            mvieId = getIntent().getStringArrayListExtra("showingList");
-        }else {
-            if (Preferences.isIntialRated(this)){
-                getRecommended();
-            }else {
-                ArrayList<String> tmdbIds = new ArrayList<>();
-                dataBaseHelper = new DataBaseHelper(RatingActivity.this);
-                ArrayList<HashMap<String, String>> arrayList = dataBaseHelper.getMovies(2, 10, false);
-                for (HashMap<String, String> h : arrayList) {
-                    tmdbIds.add(h.get(DataBaseHelper.TMDB_ID));
-                }
-                mvieId = tmdbIds;
-            }
-            /*
-        } else {
-            mvieId.add("155");
-            mvieId.add("465099");
-            mvieId.add("157336");
-            mvieId.add("672");
-            mvieId.add("293660");
-            mvieId.add("271110");*/
-        }
-
+        loadList();
         setupDrawer();
         rv_movie = findViewById(R.id.rv_movies);
         movieAdapter = new MovieAdapter();
@@ -119,6 +96,24 @@ public class RatingActivity extends AppCompatActivity
         });
     }
 
+    private void loadList(){
+        if (getIntent() != null && getIntent().getStringArrayListExtra("showingList") != null) {
+            mvieId = getIntent().getStringArrayListExtra("showingList");
+        }else {
+            if (Preferences.isIntialRated(this)){
+                getRecommended();
+            }else {
+                ArrayList<String> tmdbIds = new ArrayList<>();
+                dataBaseHelper = new DataBaseHelper(RatingActivity.this);
+                ArrayList<HashMap<String, String>> arrayList = dataBaseHelper.getMovies(2, 10, false);
+                for (HashMap<String, String> h : arrayList) {
+                    tmdbIds.add(h.get(DataBaseHelper.TMDB_ID));
+                }
+                mvieId = tmdbIds;
+            }
+        }
+    }
+
     public void showUserList(View view) {
         String title = "";
         ArrayList<String> temp = new ArrayList<>();
@@ -133,6 +128,10 @@ public class RatingActivity extends AppCompatActivity
             case R.id.favourites:
                 temp = Preferences.getFavourites(RatingActivity.this);
                 title = "Favourites";
+                break;
+            case R.id.ratedmovies:
+                temp = Preferences.getRatedMovies(RatingActivity.this);
+                title = "Rated Movies";
                 break;
         }
         if (temp != null && temp.size() > 0) {
