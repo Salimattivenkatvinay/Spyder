@@ -3,6 +3,10 @@ apply plugin: 'com.android.application'
 android {
     compileSdkVersion 26
     buildToolsVersion "26.0.0"
+    dexOptions {
+        javaMaxHeapSize "4g"
+        preDexLibraries = false
+    }
     defaultConfig {
         applicationId "com.vinay.spyder"
         minSdkVersion 17
@@ -10,6 +14,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
 
     lintOptions {
@@ -51,6 +56,7 @@ dependencies {
     compile 'com.mxn.soul:flowingdrawer-core:2.0.0'
     compile 'com.nineoldandroids:library:2.4.0'
     compile 'com.github.jd-alexander:LikeButton:0.2.1'
+    compile 'com.android.support:multidex:1.0.2'
     //compile 'org.jsoup:jsoup:1.10.3'
     compile 'com.iamhabib:easy-preference:1.0.1'
     compile 'com.readystatesoftware.sqliteasset:sqliteassethelper:+'

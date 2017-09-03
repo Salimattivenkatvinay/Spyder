@@ -3,9 +3,11 @@ package com.vinay.spyder.activities;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.ColorStateList;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.util.ArrayMap;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -19,6 +21,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.allattentionhere.fabulousfilter.AAH_FabulousFragment;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -41,26 +44,36 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import java.util.Collections;
 import java.util.HashMap;
 
 import me.zhanghai.android.materialratingbar.MaterialRatingBar;
 
-public class RatingActivity extends AppCompatActivity {
+public class RatingActivity extends AppCompatActivity
+        implements AAH_FabulousFragment.Callbacks, AAH_FabulousFragment.AnimationListener {
 
     RecyclerView rv_movie;
-    ArrayList<String> mvieId=new ArrayList<>();
+    ArrayList<String> mvieId = new ArrayList<>();
     ImageView userPic;
     View view;
+    FloatingActionButton fab;
+    private ArrayMap<String, List<String>> applied_filters = new ArrayMap<>();
+    FiltersFragment dialogFrag;
+    MovieAdapter movieAdapter;
+
     DataBaseHelper dataBaseHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rating1);
+        view = findViewById(R.id.root_layout);
+        fab = (FloatingActionButton) findViewById(R.id.fab);
         view=findViewById(R.id.root_layout);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        if (getIntent()!=null && getIntent().getStringArrayListExtra("showingList")!=null){
+        if (getIntent() != null && getIntent().getStringArrayListExtra("showingList") != null) {
             mvieId = getIntent().getStringArrayListExtra("showingList");
         }else {
             ArrayList<String> tmdbIds = new ArrayList<>();
@@ -72,6 +85,7 @@ public class RatingActivity extends AppCompatActivity {
             mvieId = tmdbIds;
 
             /*
+        } else {
             mvieId.add("155");
             mvieId.add("465099");
             mvieId.add("157336");
@@ -81,17 +95,26 @@ public class RatingActivity extends AppCompatActivity {
         }
 
         setupDrawer();
-        rv_movie=findViewById(R.id.rv_movies);
-        MovieAdapter movieAdapter=new MovieAdapter();
-        RecyclerView.LayoutManager layoutManager=new LinearLayoutManager(RatingActivity.this, LinearLayoutManager.VERTICAL,false);
+        rv_movie = findViewById(R.id.rv_movies);
+        movieAdapter = new MovieAdapter();
+        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(RatingActivity.this, LinearLayoutManager.VERTICAL, false);
         rv_movie.setLayoutManager(layoutManager);
         rv_movie.setAdapter(movieAdapter);
+
+        dialogFrag = FiltersFragment.newInstance();
+        dialogFrag.setParentFab(fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                dialogFrag.show(getSupportFragmentManager(), dialogFrag.getTag());
+            }
+        });
     }
 
-    public void showUserList(View view){
+    public void showUserList(View view) {
         String title = "";
         ArrayList<String> temp = new ArrayList<>();
-        switch (view.getId()){
+        switch (view.getId()) {
             case R.id.recommended:
                 getRecommended();
                 return;
@@ -104,23 +127,23 @@ public class RatingActivity extends AppCompatActivity {
                 title = "Favourites";
                 break;
         }
-        if (temp!=null && temp.size()>0) {
+        if (temp != null && temp.size() > 0) {
             if (null != getSupportActionBar())
                 getSupportActionBar().setTitle(title);
             mvieId = temp;
             rv_movie.getAdapter().notifyDataSetChanged();
-        }else
-            Toast.makeText(RatingActivity.this,"List is Empty",Toast.LENGTH_SHORT).show();
+        } else
+            Toast.makeText(RatingActivity.this, "List is Empty", Toast.LENGTH_SHORT).show();
 
-        ((FlowingDrawer)findViewById(R.id.drawerlayout)).closeMenu(true);
+        ((FlowingDrawer) findViewById(R.id.drawerlayout)).closeMenu(true);
     }
 
     private void getRecommended() {
         ArrayList<String> topmovies = Preferences.getTopRatedMovies(RatingActivity.this);
-        if (topmovies!=null && topmovies.size()>0) {
+        if (topmovies != null && topmovies.size() > 0) {
             //Collections.sort(topmovies);
             final ArrayList<String> similarmovies = new ArrayList<>();
-            String url = "https://www.themoviedb.org/movie/" + topmovies.get(topmovies.size()-1);
+            String url = "https://www.themoviedb.org/movie/" + topmovies.get(topmovies.size() - 1);
             RequestQueue requestQueue = Volley.newRequestQueue(RatingActivity.this);
             StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
                 @Override
@@ -132,12 +155,12 @@ public class RatingActivity extends AppCompatActivity {
                         Elements w = link.get(0).getElementsByTag("a");
                         similarmovies.add(w.get(0).attr("href").substring(6));
                     }
-                    if (similarmovies!=null && similarmovies.size()>0){
+                    if (similarmovies != null && similarmovies.size() > 0) {
 
                         if (null != getSupportActionBar())
                             getSupportActionBar().setTitle("Recommended");
                         mvieId = similarmovies;
-                        if (rv_movie!=null )
+                        if (rv_movie != null)
                             rv_movie.getAdapter().notifyDataSetChanged();
                     }
                 }
@@ -154,11 +177,11 @@ public class RatingActivity extends AppCompatActivity {
     private void setupDrawer() {
         userPic = findViewById(R.id.userdp);
         String uname = Preferences.getCredentials(RatingActivity.this).get("email");
-        uname = uname.substring(0,uname.indexOf("@"));
-        ((TextView)findViewById(R.id.username)).setText(uname);
+        uname = uname.substring(0, uname.indexOf("@"));
+        ((TextView) findViewById(R.id.username)).setText(uname);
         RequestQueue queue = Volley.newRequestQueue(RatingActivity.this);
-        String url = "https://www.googleapis.com/plus/v1/people/"+
-                Preferences.getCredentials(RatingActivity.this).get("password")+
+        String url = "https://www.googleapis.com/plus/v1/people/" +
+                Preferences.getCredentials(RatingActivity.this).get("password") +
                 "?fields=image&key=AIzaSyCFchHhGGRMvDs4SVUgIeE7qXcyS45bgnQ";
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -167,11 +190,11 @@ public class RatingActivity extends AppCompatActivity {
                     public void onResponse(String response) {
                         try {
                             JSONObject json = new JSONObject(response);
-                            Log.d("userresponse",response);
+                            Log.d("userresponse", response);
 
                             String url = (json.getJSONObject("image").getString("url"));
-                            url = url.substring(0,url.indexOf("?")) + "sz=150";
-                            Log.d("userUrl",url);
+                            url = url.substring(0, url.indexOf("?")) + "sz=150";
+                            Log.d("userUrl", url);
                             Glide.with(RatingActivity.this)
                                     .load(url)
                                     .into(userPic);
@@ -190,22 +213,94 @@ public class RatingActivity extends AppCompatActivity {
 
     }
 
-    class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.Myholder>{
+    @Override
+    public void onOpenAnimationStart() {
 
-        private int[][] states = new int[][] {
-                new int[] {android.R.attr.state_checked}, // checked
-                new int[] {-android.R.attr.state_checked}, // unchecked
+    }
+
+    @Override
+    public void onOpenAnimationEnd() {
+
+    }
+
+    @Override
+    public void onCloseAnimationStart() {
+
+    }
+
+    @Override
+    public void onCloseAnimationEnd() {
+
+    }
+
+    @Override
+    public void onResult(Object result) {
+
+
+        Log.d("k9res", "onResult: " + result.toString());
+        if (result.toString().equalsIgnoreCase("swiped_down")) {
+            //do something or nothing
+        } else {
+            if (result != null) {
+                ArrayMap<String, List<String>> applied_filters = (ArrayMap<String, List<String>>) result;
+                if (applied_filters.size() != 0) {
+                    List<String> filteredList =new ArrayList<>();
+                    //iterate over arraymap
+                    for (Map.Entry<String, List<String>> entry : applied_filters.entrySet()) {
+                        Log.d("k9res", "entry.key: " + entry.getKey());
+                        switch (entry.getKey()) {
+                            case "genre":
+                                filteredList = mData.getGenreFilteredMovies(entry.getValue());
+                                break;
+                            case "year":
+                                filteredList = mData.getYearFilteredMovies(entry.getValue());
+                                break;
+                        }
+                    }
+                    Log.d("k9res", "new size: " + filteredList.size());
+                    mvieId.clear();
+                    mvieId.addAll(filteredList);
+                    movieAdapter.notifyDataSetChanged();
+
+                } else {
+                    mvieId.addAll(mData.getAllMovies());
+                    movieAdapter.notifyDataSetChanged();
+                }
+            }
+            //handle result
+        }
+    }
+
+    @Override
+    public void onConfigurationChanged(Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        if (dialogFrag.isAdded()) {
+            dialogFrag.dismiss();
+            dialogFrag.show(getSupportFragmentManager(), dialogFrag.getTag());
+        }
+    }
+
+    public ArrayMap<String, List<String>> getApplied_filters() {
+        return applied_filters;
+    }
+
+    class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.Myholder> {
+
+        private int[][] states = new int[][]{
+                new int[]{android.R.attr.state_checked}, // checked
+                new int[]{-android.R.attr.state_checked}, // unchecked
         };
 
         private int[] colors = new int[]{
                 Color.GREEN, // checked
                 Color.YELLOW // unchecked set default in onCreate
         };
-        class Myholder extends RecyclerView.ViewHolder{
-            TextView titleView,taglineView,userRatingView,tmbdRateView,genreView,yearView;
-            ImageView backdropView,posterView;
+
+        class Myholder extends RecyclerView.ViewHolder {
+            TextView titleView, taglineView, userRatingView, tmbdRateView, genreView, yearView;
+            ImageView backdropView, posterView;
             MaterialRatingBar ratingBar;
-            View parentView,loadingMask,errorMask;
+            View parentView, loadingMask, errorMask;
 
             public Myholder(View itemView) {
                 super(itemView);
@@ -241,7 +336,7 @@ public class RatingActivity extends AppCompatActivity {
                 @Override
                 public void onClick(View view) {
                     Intent intent = new Intent(RatingActivity.this, MoviePreview.class);
-                    intent.putExtra("tmdbId",mvieId.get(position));
+                    intent.putExtra("tmdbId", mvieId.get(position));
                     startActivity(intent);
                 }
             });
@@ -286,14 +381,14 @@ public class RatingActivity extends AppCompatActivity {
                                     }
                                 });
 
-                                JSONArray array=json.getJSONArray("genres");
-                                String genres="";
-                                for(int i=0;i<array.length();i++){
-                                    JSONObject k=array.getJSONObject(i);
-                                    genres+=k.getString("name")+" | ";
+                                JSONArray array = json.getJSONArray("genres");
+                                String genres = "";
+                                for (int i = 0; i < array.length(); i++) {
+                                    JSONObject k = array.getJSONObject(i);
+                                    genres += k.getString("name") + " | ";
 
                                 }
-                                holder.genreView.setText(genres.substring(0,genres.length()-3));
+                                holder.genreView.setText(genres.substring(0, genres.length() - 3));
 
                                 holder.loadingMask.setVisibility(View.GONE);
 //                                getTrailerPath();
@@ -314,13 +409,13 @@ public class RatingActivity extends AppCompatActivity {
 
         }
 
-        void setupUI(Myholder myholder){
+        void setupUI(Myholder myholder) {
 
         }
 
         @Override
         public int getItemCount() {
-            return mvieId==null?0:mvieId.size();
+            return mvieId == null ? 0 : mvieId.size();
         }
 /*
 
@@ -358,6 +453,7 @@ public class RatingActivity extends AppCompatActivity {
 */
 
 
-
     }
+
+
 }
