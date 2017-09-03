@@ -277,8 +277,10 @@ public class RatingActivity extends AppCompatActivity
                                 break;
                             case "year":
                                 List<HashMap<String,String>> b = dataBaseHelper.getFilteredList(0,20, false, null, entry.getValue());
-                                for (HashMap<String,String> h : b){
-                                    filteredList.add(h.get(DataBaseHelper.TMDB_ID));
+                                if(b!=null) {
+                                    for (HashMap<String, String> h : b) {
+                                        filteredList.add(h.get(DataBaseHelper.TMDB_ID));
+                                    }
                                 }
                                 break;
                         }

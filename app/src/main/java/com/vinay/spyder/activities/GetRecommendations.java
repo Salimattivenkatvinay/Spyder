@@ -44,7 +44,7 @@ public class GetRecommendations extends AppCompatActivity {
                 ArrayList<String> topmovies = Preferences.getTopRatedMovies(GetRecommendations.this);
                 if (topmovies != null && !topmovies.isEmpty()) {
                     //Collections.sort(topmovies);
-                    int k = (topmovies.size()<3)? topmovies.size():3;
+                    final int k = (topmovies.size()<3)? topmovies.size():3;
                     final ArrayList<String> similarmovies = new ArrayList<>();
                     for (int i = 0; i < k; i++) {
                         String url = "https://www.themoviedb.org/movie/" + topmovies.get(i);
@@ -62,7 +62,7 @@ public class GetRecommendations extends AppCompatActivity {
                                     similarmovies.add(w.get(0).attr("href").substring(7));
                                 }
 
-                                if (finalI == 2 && similarmovies != null && similarmovies.size() > 0) {
+                                if (finalI == k-1 && similarmovies != null && similarmovies.size() > 0) {
                                     Log.e("key", similarmovies.toString());
                                     progressDialog.dismiss();
                                     Collections.shuffle(similarmovies);
@@ -73,7 +73,7 @@ public class GetRecommendations extends AppCompatActivity {
                         }, new Response.ErrorListener() {
                             @Override
                             public void onErrorResponse(VolleyError error) {
-                                if (finalI == 2)progressDialog.dismiss();
+                                if (finalI == k-1)progressDialog.dismiss();
                                 Toast.makeText(GetRecommendations.this, "Failed to load Recommendations", Toast.LENGTH_SHORT).show();
                             }
                         });

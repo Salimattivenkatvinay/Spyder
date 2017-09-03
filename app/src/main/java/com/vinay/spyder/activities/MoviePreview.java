@@ -412,6 +412,13 @@ public class MoviePreview extends YouTubeBaseActivity {
                     .placeholder(R.drawable.avatar)
                     .error(R.drawable.avatar)
                     .into(holder.imageView);
+            holder.imageView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                    startActivity(new Intent(MoviePreview.this,castDetActivity.class));
+                }
+            });
         }
 
         @Override
