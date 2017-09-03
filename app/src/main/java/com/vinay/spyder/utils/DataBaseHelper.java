@@ -135,7 +135,7 @@ public class DataBaseHelper extends SQLiteAssetHelper {
     public ArrayList<String> getYears(){
         ArrayList<String> arrayList = new ArrayList<>();
         SQLiteDatabase database = this.getReadableDatabase();
-        String selectQuery = "SELECT * FROM " + TABLE_NAME + " ORDER BY "+ YEAR + " ASC";
+        String selectQuery = "SELECT * FROM " + TABLE_NAME + " ORDER BY "+ YEAR + " DESC";
         Cursor cursor = database.rawQuery(selectQuery,null);
         if (cursor!=null){
             if (cursor.moveToFirst()){
