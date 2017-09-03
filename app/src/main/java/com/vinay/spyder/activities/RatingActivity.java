@@ -1,6 +1,7 @@
 package com.vinay.spyder.activities;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -27,6 +28,8 @@ import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
 import com.mxn.soul.flowingdrawer_core.FlowingDrawer;
 import com.vinay.spyder.R;
+import com.vinay.spyder.Spyder;
+import com.vinay.spyder.utils.DataBaseHelper;
 import com.vinay.spyder.utils.Preferences;
 
 import org.json.JSONArray;
@@ -39,6 +42,7 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 
 import me.zhanghai.android.materialratingbar.MaterialRatingBar;
 
@@ -48,21 +52,32 @@ public class RatingActivity extends AppCompatActivity {
     ArrayList<String> mvieId=new ArrayList<>();
     ImageView userPic;
     View view;
+    DataBaseHelper dataBaseHelper;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rating1);
         view=findViewById(R.id.root_layout);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         if (getIntent()!=null && getIntent().getStringArrayListExtra("showingList")!=null){
             mvieId = getIntent().getStringArrayListExtra("showingList");
         }else {
+            ArrayList<String> tmdbIds = new ArrayList<>();
+            dataBaseHelper = new DataBaseHelper(RatingActivity.this);
+            ArrayList<HashMap<String,String>> arrayList = dataBaseHelper.getMovies(2,10,false);
+            for (HashMap<String,String> h : arrayList){
+                tmdbIds.add(h.get(DataBaseHelper.TMDB_ID));
+            }
+            mvieId = tmdbIds;
+
+            /*
             mvieId.add("155");
             mvieId.add("465099");
             mvieId.add("157336");
             mvieId.add("672");
             mvieId.add("293660");
-            mvieId.add("271110");
+            mvieId.add("271110");*/
         }
 
         setupDrawer();
@@ -240,12 +255,13 @@ public class RatingActivity extends AppCompatActivity {
                                 JSONObject json = new JSONObject(response);
                                 holder.titleView.setText(json.getString("original_title"));
                                 holder.taglineView.setText(json.getString("tagline"));
-                                holder.tmbdRateView.setText(json.getString("vote_average"));
+                                String voteavg = json.getString("vote_average");
+                                holder.tmbdRateView.setText(voteavg);
                                 DisplayMetrics metrics = new DisplayMetrics();
                                 getWindowManager().getDefaultDisplay().getMetrics(metrics);
                                 RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(metrics.widthPixels,(int)(0.56*metrics.widthPixels));
                                 holder.backdropView.setLayoutParams(layoutParams);
-                                holder.yearView.setText("year : " + json.getString("release_date").substring(0,4));
+                                holder.yearView.setText(dataBaseHelper.getYear(mvieId.get(position)));//"year : " + json.getString("release_date").substring(0,4));
 
                                 Glide.with(RatingActivity.this)
                                         .load("http://image.tmdb.org/t/p/w185"+json.getString("poster_path"))
@@ -256,13 +272,17 @@ public class RatingActivity extends AppCompatActivity {
                                         .into(holder.backdropView);
 
                                 holder.ratingBar.setNumStars(5);
+
                                 ColorStateList colorStateList = new ColorStateList(states,colors);
                                 holder.ratingBar.setProgressTintList(colorStateList);
                                 holder.ratingBar.setOnRatingChangeListener(new MaterialRatingBar.OnRatingChangeListener() {
                                     @Override
                                     public void onRatingChanged(MaterialRatingBar ratingBar, float rating) {
                                         Log.d("rating changed",rating+"");
-                                        holder.userRatingView.setText(rating+"");
+                                        holder.userRatingView.setText(rating+"");Preferences.rateMovie(RatingActivity.this,mvieId.get(position),rating+"");
+                                        if (Preferences.getNoOfRatedMovies(RatingActivity.this) == 5 ){
+                                            startActivity(new Intent(RatingActivity.this, GetRecommendations.class));
+                                        }
                                     }
                                 });
 

@@ -1,6 +1,7 @@
 package com.vinay.spyder.activities;
 
 import android.app.ProgressDialog;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -22,6 +23,7 @@ public class SignUpActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sign_up);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         et_uname=findViewById(R.id.et_uname);
         et_password=findViewById(R.id.et_password);

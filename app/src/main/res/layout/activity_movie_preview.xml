@@ -29,7 +29,7 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
-                android:layout_height="530dp"
+                android:layout_height="wrap_content"
                 app:layout_collapseMode="parallax">
 
                 <ImageView
@@ -74,90 +74,104 @@
                         android:textSize="20sp" />
 
                     <com.like.LikeButton
-                        app:icon_type="heart"
+                        android:id="@+id/fav"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_marginStart="10dp"
+                        android:gravity="bottom"
+                        app:anim_scale_factor="2"
+                        app:circle_end_color="@android:color/darker_gray"
                         app:circle_start_color="@android:color/white"
                         app:dots_primary_color="@android:color/darker_gray"
                         app:dots_secondary_color="@android:color/white"
-                        app:circle_end_color="@android:color/darker_gray"
-                        app:icon_size="25sp"
-                        android:gravity="bottom"
-                        app:liked="true"
-                        app:anim_scale_factor="2"
+                        app:icon_size="15dp"
+                        app:icon_type="heart"
                         app:is_enabled="true"
-                        android:id="@+id/fav"
-                        android:layout_height="wrap_content"
-                        android:layout_width="wrap_content" />
+                        app:liked="true" />
 
                     <com.like.LikeButton
+                        android:id="@+id/watch"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
                         android:layout_marginStart="10dp"
+                        android:gravity="bottom"
+                        app:anim_scale_factor="2"
+                        app:circle_end_color="@android:color/darker_gray"
                         app:circle_start_color="@android:color/white"
                         app:dots_primary_color="@android:color/darker_gray"
                         app:dots_secondary_color="@android:color/white"
-                        app:circle_end_color="@android:color/darker_gray"
-                        app:icon_size="25sp"
-                        android:gravity="bottom"
-                        app:liked="true"
-                        app:anim_scale_factor="2"
+                        app:icon_size="15dp"
                         app:is_enabled="true"
-                        android:id="@+id/watch"
                         app:like_drawable="@drawable/ic_ondemand_video_white_24dp"
-                        app:unlike_drawable="@drawable/ic_ondemand_video_black_24dp"
-                        android:layout_height="wrap_content"
-                        android:layout_width="wrap_content" />
+                        app:liked="true"
+                        app:unlike_drawable="@drawable/ic_ondemand_video_black_24dp" />
                 </LinearLayout>
 
-                <TextView
-                    android:id="@+id/tagline"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
                     android:layout_below="@+id/poster"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="90dp"
-                    android:text="tagline"
-                    android:textSize="20sp" />
+                    android:layout_marginTop="90dp">
 
-                <TextView
-                    android:id="@+id/year"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/tagline"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="10dp"
-                    android:text="year"
-                    android:textSize="20sp" />
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
 
+                        <TextView
+                            android:id="@+id/tagline"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="20dp"
+                            android:text="tagline"
+                            android:textSize="20sp" />
 
-                <TextView
-                    android:id="@+id/genre"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@+id/year"
-                    android:layout_marginStart="20dp"
-                    android:layout_marginTop="10dp"
-                    android:text="Genre1|Genre2|Genre3"
-                    android:textSize="15sp" />
+                        <TextView
+                            android:id="@+id/year"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/tagline"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginTop="10dp"
+                            android:text="year"
+                            android:textSize="20sp" />
 
-                <me.zhanghai.android.materialratingbar.MaterialRatingBar
-                    android:id="@+id/ratingbar"
-                    style="@style/Widget.MaterialRatingBar.RatingBar"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentBottom="true"
-                    android:layout_marginBottom="25dp"
-                    android:layout_marginStart="20dp" />
+                        <TextView
+                            android:id="@+id/genre"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_below="@+id/year"
+                            android:layout_marginStart="20dp"
+                            android:layout_marginTop="10dp"
+                            android:text="Genre1|Genre2|Genre3"
+                            android:textSize="15sp" />
 
-                <TextView
-                    android:id="@+id/userrating"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBottom="@+id/ratingbar"
-                    android:layout_alignTop="@+id/ratingbar"
-                    android:layout_marginStart="15dp"
-                    android:layout_toEndOf="@+id/ratingbar"
-                    android:gravity="center"
-                    android:text="0.5"
-                    android:textSize="20sp" />
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center_vertical"
+                            android:layout_gravity="center_vertical">
+
+                            <me.zhanghai.android.materialratingbar.MaterialRatingBar
+                                android:id="@+id/ratingbar"
+                                style="@style/Widget.MaterialRatingBar.RatingBar"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@id/genre"
+                                android:layout_marginStart="20dp"
+                                android:layout_marginTop="25dp" />
+
+                            <TextView
+                                android:id="@+id/userrating"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginStart="15dp"
+                                android:gravity="center"
+                                android:text="0.5"
+                                android:textSize="20sp" />
+                        </LinearLayout>
+                    </LinearLayout>
+                </ScrollView>
             </RelativeLayout>
 
             <android.support.v7.widget.Toolbar
@@ -186,9 +200,9 @@
                 android:layout_margin="10dp">
 
                 <LinearLayout
-                    android:layout_margin="25dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_margin="25dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -198,12 +212,12 @@
                         android:textSize="25sp" />
 
                     <TextView
-                        android:layout_marginTop="15dp"
                         android:id="@+id/overview"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:textSize="18sp"
-                        android:text="" />
+                        android:layout_marginTop="15dp"
+                        android:text=""
+                        android:textSize="18sp" />
                 </LinearLayout>
             </android.support.v7.widget.CardView>
 
@@ -215,9 +229,9 @@
 
 
                 <LinearLayout
-                    android:layout_margin="25dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_margin="25dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -227,11 +241,10 @@
                         android:textSize="25sp" />
 
                     <android.support.v7.widget.RecyclerView
+                        android:id="@+id/cast_recycler"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/cast_recycler"
-                        android:layout_marginTop="15dp"
-                        />
+                        android:layout_marginTop="15dp" />
                 </LinearLayout>
 
             </android.support.v7.widget.CardView>
@@ -244,9 +257,9 @@
 
 
                 <LinearLayout
-                    android:layout_margin="25dp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_margin="25dp"
                     android:orientation="vertical">
 
                     <TextView
@@ -256,11 +269,10 @@
                         android:textSize="25sp" />
 
                     <android.support.v7.widget.RecyclerView
+                        android:id="@+id/crew_recycler"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:id="@+id/crew_recycler"
-                        android:layout_marginTop="15dp"
-                        />
+                        android:layout_marginTop="15dp" />
                 </LinearLayout>
 
             </android.support.v7.widget.CardView>

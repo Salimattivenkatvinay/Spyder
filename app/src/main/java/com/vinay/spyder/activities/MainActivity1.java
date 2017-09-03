@@ -1,5 +1,6 @@
 package com.vinay.spyder.activities;
 
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.util.ArrayMap;
@@ -40,6 +41,7 @@ public class MainActivity1 extends AppCompatActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main1);
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab2 = (FloatingActionButton) findViewById(R.id.fab2);

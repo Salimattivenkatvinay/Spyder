@@ -35,7 +35,8 @@
             android:name=".activities.MoviePreview"
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:theme="@style/Theme.AppCompat" />
-        <activity android:name=".activities.GetRecommendations"></activity>
+        <activity android:name=".activities.GetRecommendations" />
+        <activity android:name=".activities.CrewInfo"></activity>
     </application>
 
 </manifest>

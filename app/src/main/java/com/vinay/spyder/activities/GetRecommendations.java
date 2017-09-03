@@ -2,6 +2,7 @@ package com.vinay.spyder.activities;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
@@ -29,6 +30,7 @@ public class GetRecommendations extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_get_recommendations);
         final ProgressDialog progressDialog=new ProgressDialog(GetRecommendations.this);
         progressDialog.setMessage("loading");

@@ -85,7 +85,6 @@ public class Preferences {
                 v.put("rating",rating);
                 movies.add(v);
             }
-
         }
     }
 

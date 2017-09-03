@@ -4,6 +4,7 @@ import android.app.FragmentManager;
 import android.app.FragmentTransaction;
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.content.res.ColorStateList;
 import android.graphics.Color;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -35,6 +37,7 @@ import com.like.LikeButton;
 import com.like.OnLikeListener;
 import com.vinay.spyder.R;
 import com.vinay.spyder.utils.CrewItem;
+import com.vinay.spyder.utils.DataBaseHelper;
 import com.vinay.spyder.utils.Preferences;
 
 import net.opacapp.multilinecollapsingtoolbar.CollapsingToolbarLayout;
@@ -66,11 +69,14 @@ public class MoviePreview extends YouTubeBaseActivity {
 
     LikeButton favourite,watchlist;
     RecyclerView castView, crewView;
+    DataBaseHelper dataBaseHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movie_preview);
+        dataBaseHelper = new DataBaseHelper(this);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         pb = new ProgressDialog(MoviePreview.this);
         pb.setMessage("Loading...");
         pb.setCancelable(false);
@@ -106,6 +112,9 @@ public class MoviePreview extends YouTubeBaseActivity {
         watchlist = findViewById(R.id.watch);
 
         collapsingToolbarLayout.setTitle(title);
+
+        LinearLayout.LayoutParams layoutParams1 = new LinearLayout.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,0);
+        if (tagline.isEmpty())taglineView.setLayoutParams(layoutParams1);
         taglineView.setText(tagline);
         genresView.setText(genres);
         voteView.setText(voteavg);
@@ -116,7 +125,7 @@ public class MoviePreview extends YouTubeBaseActivity {
         RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(metrics.widthPixels,(int)(0.56*metrics.widthPixels));
         backdropView.setLayoutParams(layoutParams);
 
-        yearView.setText("year : " + year.substring(0,4));
+        yearView.setText(dataBaseHelper.getYear(tmdb_id));//"year : " + year.substring(0,4));
 
         Glide.with(MoviePreview.this)
                 .load("http://image.tmdb.org/t/p/w185"+posterpath)
@@ -400,6 +409,8 @@ public class MoviePreview extends YouTubeBaseActivity {
             holder.titleView.setText(crewItems.get(position).getName() + "\n" + crewItems.get(position).getRole());
             Glide.with(MoviePreview.this)
                     .load("http://image.tmdb.org/t/p/w185"+crewItems.get(position).getProfile_path())
+                    .placeholder(R.drawable.avatar)
+                    .error(R.drawable.avatar)
                     .into(holder.imageView);
         }
 

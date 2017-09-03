@@ -1,6 +1,7 @@
 package com.vinay.spyder.activities;
 
 import android.app.Dialog;
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.TabLayout;

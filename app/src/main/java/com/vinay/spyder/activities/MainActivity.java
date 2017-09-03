@@ -1,5 +1,6 @@
 package com.vinay.spyder.activities;
 
+import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
@@ -26,6 +27,7 @@ public class MainActivity extends AppCompatActivity implements DuoMenuView.OnMen
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         setContentView(R.layout.activity_main);
         mTitles = new ArrayList<>(Arrays.asList(getResources().getStringArray(R.array.menuOptions)));
 
