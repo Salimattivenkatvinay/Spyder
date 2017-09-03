@@ -417,7 +417,7 @@ public class RatingActivity extends AppCompatActivity
                                     public void onRatingChanged(MaterialRatingBar ratingBar, float rating) {
                                         Log.d("rating changed",rating+"");
                                         holder.userRatingView.setText(rating+"");
-                                        Preferences.rateMovie(RatingActivity.this,mvieId.get(position),rating+"");
+                                        Preferences.rateMovie(RatingActivity.this,mvieId.get(holder.getAdapterPosition()),rating+"");
                                         if (Preferences.getNoOfRatedMovies(RatingActivity.this) == 5 ){
                                             startActivity(new Intent(RatingActivity.this, GetRecommendations.class));
                                         }
