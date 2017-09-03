@@ -78,14 +78,13 @@ public class RatingActivity extends AppCompatActivity
         view=findViewById(R.id.root_layout);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
-        loadList();
         setupDrawer();
         rv_movie = findViewById(R.id.rv_movies);
         movieAdapter = new MovieAdapter();
         RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(RatingActivity.this, LinearLayoutManager.VERTICAL, false);
         rv_movie.setLayoutManager(layoutManager);
         rv_movie.setAdapter(movieAdapter);
-
+        loadList();
         dialogFrag = FiltersFragment.newInstance();
         dialogFrag.setParentFab(fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -97,19 +96,26 @@ public class RatingActivity extends AppCompatActivity
     }
 
     private void loadList(){
+        swipeRefreshLayout.setRefreshing(true);
         if (getIntent() != null && getIntent().getStringArrayListExtra("showingList") != null) {
             mvieId = getIntent().getStringArrayListExtra("showingList");
+            rv_movie.getAdapter().notifyDataSetChanged();
+            swipeRefreshLayout.setRefreshing(false);
         }else {
             if (Preferences.isIntialRated(this)){
                 getRecommended();
             }else {
                 ArrayList<String> tmdbIds = new ArrayList<>();
                 dataBaseHelper = new DataBaseHelper(RatingActivity.this);
-                ArrayList<HashMap<String, String>> arrayList = dataBaseHelper.getMovies(2, 10, false);
+
+                ArrayList<HashMap<String, String>> arrayList = dataBaseHelper.getMovies((int)(Math.random()*1000), 10, false);
+                Collections.shuffle(arrayList);
                 for (HashMap<String, String> h : arrayList) {
                     tmdbIds.add(h.get(DataBaseHelper.TMDB_ID));
                 }
                 mvieId = tmdbIds;
+                rv_movie.getAdapter().notifyDataSetChanged();
+                swipeRefreshLayout.setRefreshing(false);
             }
         }
     }
@@ -325,7 +331,7 @@ public class RatingActivity extends AppCompatActivity
 
     @Override
     public void onRefresh() {
-        getRecommended();
+        loadList();
         //movieAdapter.notifyDataSetChanged();
     }
 
