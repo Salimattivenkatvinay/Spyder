@@ -25,6 +25,7 @@ import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.List;
 
 public class GetRecommendations extends AppCompatActivity {
 
@@ -41,7 +42,7 @@ public class GetRecommendations extends AppCompatActivity {
             public void onClick(View view) {
                 progressDialog.show();
                 final Intent intent = new Intent(GetRecommendations.this, RatingActivity.class);
-                ArrayList<String> topmovies = Preferences.getTopRatedMovies(GetRecommendations.this);
+                List<String> topmovies = Preferences.getTopRatedMovies(GetRecommendations.this);
                 if (topmovies != null && !topmovies.isEmpty()) {
                     //Collections.sort(topmovies);
                     final int k = (topmovies.size()<3)? topmovies.size():3;

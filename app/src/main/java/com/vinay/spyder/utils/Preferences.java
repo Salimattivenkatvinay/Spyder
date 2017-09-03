@@ -6,8 +6,10 @@ import android.content.SharedPreferences;
 import com.google.gson.internal.LinkedTreeMap;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -116,7 +118,7 @@ public class Preferences {
         tinyDB.putObject("ratedmovies",movies);
     }
 
-    public static ArrayList<String> getTopRatedMovies(Context context) {
+    public static List<String> getTopRatedMovies(Context context) {
         ArrayList<String> topmovies = new ArrayList<>();
         /*SharedPreferences preferences = context.getSharedPreferences("ratings",Context.MODE_PRIVATE);
         Set<String> movies = preferences.getStringSet("ratedmovies",null);
@@ -129,22 +131,23 @@ public class Preferences {
         for (int i = 0; i < movies.size(); i++) {
             if (Float.compare(Float.parseFloat(movies.get(i).get("rating")), 2.5f) >= 0) {
                 topmovies.add(movies.get(i).get("movie"));
-                if (topmovies.size() == 3) break;
             }
         }
-        if (topmovies != null && topmovies.size() > 0) {
 
+        if (topmovies != null && topmovies.size() > 0) {
+            Collections.shuffle(topmovies);
         } else {
+            Collections.shuffle(movies);
             for (LinkedTreeMap<String, String> p : movies) {
                 topmovies.add(p.get("movie"));
             }
-            if (movies.size() > 3)
-                topmovies.subList(0, 2);
-            else
-                topmovies.subList(0, movies.size() - 1);
         }
 
-        return topmovies;
+        if (topmovies.size()<3){
+            return topmovies;
+        }else {
+            return topmovies.subList(0,2);
+        }
     }
 
 

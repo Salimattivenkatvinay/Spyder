@@ -151,39 +151,45 @@ public class RatingActivity extends AppCompatActivity
         progressDialog.setMessage("loading");
         progressDialog.setCancelable(false);
         progressDialog.show();
-        ArrayList<String> topmovies = Preferences.getTopRatedMovies(this);
+        final Intent intent = new Intent(RatingActivity.this, RatingActivity.class);
+        List<String> topmovies = Preferences.getTopRatedMovies(RatingActivity.this);
         if (topmovies != null && !topmovies.isEmpty()) {
-            swipeRefreshLayout.setRefreshing(true);
-            if (topmovies != null && topmovies.size() > 0) {
-                //Collections.sort(topmovies);
-                final ArrayList<String> similarmovies = new ArrayList<>();
-
-                String url = "https://www.themoviedb.org/movie/" + topmovies.get(0);//+getIntent().getExtras().getString("mvid","155");
-                RequestQueue requestQueue = Volley.newRequestQueue(this);
+            //Collections.sort(topmovies);
+            final int k = (topmovies.size()<3)? topmovies.size():3;
+            final ArrayList<String> similarmovies = new ArrayList<>();
+            for (int i = 0; i < k; i++) {
+                String url = "https://www.themoviedb.org/movie/" + topmovies.get(i);
+                RequestQueue requestQueue = Volley.newRequestQueue(RatingActivity.this);
+                final int finalI = i;
                 StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
                         Document doc = Jsoup.parse(response);
                         Elements content = doc.getElementsByClass("item mini backdrop mini_card");
+                        progressDialog.setMessage("Task "+(finalI+1)+" of 3");
                         for (Element l : content) {
                             Elements link = l.getElementsByClass("image_content");
                             Elements w = link.get(0).getElementsByTag("a");
                             similarmovies.add(w.get(0).attr("href").substring(7));
                         }
-                        if (similarmovies != null && similarmovies.size() > 0) {
+
+                        if (finalI == k-1 && similarmovies != null && similarmovies.size() > 0) {
                             Log.e("key", similarmovies.toString());
                             progressDialog.dismiss();
-                            swipeRefreshLayout.setRefreshing(false);
-
+                            Collections.shuffle(similarmovies);
                             mvieId = similarmovies;
                             rv_movie.getAdapter().notifyDataSetChanged();
+                            swipeRefreshLayout.setRefreshing(false);
                         }
                     }
                 }, new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        progressDialog.dismiss();
-                        swipeRefreshLayout.setRefreshing(false);
+
+                        if (finalI == k-1){
+                            swipeRefreshLayout.setRefreshing(false);
+                            progressDialog.dismiss();
+                        }
                         Toast.makeText(RatingActivity.this, "Failed to load Recommendations", Toast.LENGTH_SHORT).show();
                     }
                 });
@@ -254,7 +260,7 @@ public class RatingActivity extends AppCompatActivity
     @Override
     public void onResult(Object result) {
 
-
+/*http://api.themoviedb.org/3/person/200?api_key=7e8f60e325cd06e164799af1e317d7a7*/
         Log.d("k9res", "onResult: " + result.toString());
         if (result.toString().equalsIgnoreCase("swiped_down")) {
             //do something or nothing
@@ -266,6 +272,7 @@ public class RatingActivity extends AppCompatActivity
                     //iterate over arraymap
                     for (Map.Entry<String, List<String>> entry : applied_filters.entrySet()) {
                         Log.d("k9res", "entry.key: " + entry.getKey());
+                        if (dataBaseHelper==null)dataBaseHelper = new DataBaseHelper(RatingActivity.this);
                         switch (entry.getKey()) {
                             case "genre":
                                 List<HashMap<String,String>> a = dataBaseHelper.getFilteredList(0,20,false,entry.getValue(),null);
