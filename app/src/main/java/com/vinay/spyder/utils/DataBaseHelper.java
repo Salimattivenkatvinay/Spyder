@@ -70,12 +70,10 @@ public class DataBaseHelper extends SQLiteAssetHelper {
         String selectQuery = "SELECT * FROM " + TABLE_NAME + " WHERE ";
 
         if (genreFilter){
-            selectQuery += GENRE + " IN ('";
             for(String genre : genres){
-                selectQuery += ( "%"+genre+ "%" + "','");
+                selectQuery +=  GENRE + " LIKE '%"+genre+ "%' OR ";
             }
-            selectQuery = selectQuery.substring(0, selectQuery.length()-2);
-            selectQuery += ") ";
+            selectQuery = selectQuery.substring(0, selectQuery.length()-3);
         }
 
         if (yearFilter){

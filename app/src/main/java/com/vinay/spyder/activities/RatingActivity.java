@@ -9,6 +9,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.util.ArrayMap;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -53,7 +54,7 @@ import java.util.HashMap;
 import me.zhanghai.android.materialratingbar.MaterialRatingBar;
 
 public class RatingActivity extends AppCompatActivity
-        implements AAH_FabulousFragment.Callbacks, AAH_FabulousFragment.AnimationListener {
+        implements AAH_FabulousFragment.Callbacks, AAH_FabulousFragment.AnimationListener,SwipeRefreshLayout.OnRefreshListener {
 
     RecyclerView rv_movie;
     ArrayList<String> mvieId = new ArrayList<>();
@@ -63,6 +64,7 @@ public class RatingActivity extends AppCompatActivity
     private ArrayMap<String, List<String>> applied_filters = new ArrayMap<>();
     FiltersFragment dialogFrag;
     MovieAdapter movieAdapter;
+    SwipeRefreshLayout swipeRefreshLayout;
 
     DataBaseHelper dataBaseHelper;
     @Override
@@ -70,6 +72,8 @@ public class RatingActivity extends AppCompatActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rating1);
         view = findViewById(R.id.root_layout);
+        swipeRefreshLayout=findViewById(R.id.swipe_refresh_layout);
+        swipeRefreshLayout.setOnRefreshListener(this);
         fab = (FloatingActionButton) findViewById(R.id.fab);
         view=findViewById(R.id.root_layout);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
@@ -143,43 +147,48 @@ public class RatingActivity extends AppCompatActivity
     }
 
     private void getRecommended() {
-        final ProgressDialog progressDialog=new ProgressDialog(RatingActivity.this);
+        final ProgressDialog progressDialog = new ProgressDialog(RatingActivity.this);
         progressDialog.setMessage("loading");
         progressDialog.setCancelable(false);
         progressDialog.show();
         ArrayList<String> topmovies = Preferences.getTopRatedMovies(this);
-        if (topmovies!=null && !topmovies.isEmpty()) {
-            //Collections.sort(topmovies);
-            final ArrayList<String> similarmovies = new ArrayList<>();
+        if (topmovies != null && !topmovies.isEmpty()) {
+            swipeRefreshLayout.setRefreshing(true);
+            if (topmovies != null && topmovies.size() > 0) {
+                //Collections.sort(topmovies);
+                final ArrayList<String> similarmovies = new ArrayList<>();
 
-            String url = "https://www.themoviedb.org/movie/"+topmovies.get(0);//+getIntent().getExtras().getString("mvid","155");
-            RequestQueue requestQueue = Volley.newRequestQueue(this);
-            StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
-                @Override
-                public void onResponse(String response) {
-                    Document doc = Jsoup.parse(response);
-                    Elements content = doc.getElementsByClass("item mini backdrop mini_card");
-                    for (Element l : content) {
-                        Elements link = l.getElementsByClass("image_content");
-                        Elements w = link.get(0).getElementsByTag("a");
-                        similarmovies.add(w.get(0).attr("href").substring(7));
+                String url = "https://www.themoviedb.org/movie/" + topmovies.get(0);//+getIntent().getExtras().getString("mvid","155");
+                RequestQueue requestQueue = Volley.newRequestQueue(this);
+                StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        Document doc = Jsoup.parse(response);
+                        Elements content = doc.getElementsByClass("item mini backdrop mini_card");
+                        for (Element l : content) {
+                            Elements link = l.getElementsByClass("image_content");
+                            Elements w = link.get(0).getElementsByTag("a");
+                            similarmovies.add(w.get(0).attr("href").substring(7));
+                        }
+                        if (similarmovies != null && similarmovies.size() > 0) {
+                            Log.e("key", similarmovies.toString());
+                            progressDialog.dismiss();
+                            swipeRefreshLayout.setRefreshing(false);
+
+                            mvieId = similarmovies;
+                            rv_movie.getAdapter().notifyDataSetChanged();
+                        }
                     }
-                    if (similarmovies != null && similarmovies.size() > 0) {
-                        Log.e("key",similarmovies.toString());
+                }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
                         progressDialog.dismiss();
-
-                        mvieId = similarmovies;
-                        rv_movie.getAdapter().notifyDataSetChanged();
+                        swipeRefreshLayout.setRefreshing(false);
+                        Toast.makeText(RatingActivity.this, "Failed to load Recommendations", Toast.LENGTH_SHORT).show();
                     }
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    progressDialog.dismiss();
-                    Toast.makeText(RatingActivity.this, "Failed to load Recommendations", Toast.LENGTH_SHORT).show();
-                }
-            });
-            requestQueue.add(stringRequest);
+                });
+                requestQueue.add(stringRequest);
+            }
         }
     }
 
@@ -260,8 +269,10 @@ public class RatingActivity extends AppCompatActivity
                         switch (entry.getKey()) {
                             case "genre":
                                 List<HashMap<String,String>> a = dataBaseHelper.getFilteredList(0,20,false,entry.getValue(),null);
-                                for (HashMap<String,String> h : a){
-                                    filteredList.add(h.get(DataBaseHelper.TMDB_ID));
+                                if(a!=null) {
+                                    for (HashMap<String, String> h : a) {
+                                        filteredList.add(h.get(DataBaseHelper.TMDB_ID));
+                                    }
                                 }
                                 break;
                             case "year":
@@ -302,6 +313,12 @@ public class RatingActivity extends AppCompatActivity
 
     public ArrayMap<String, List<String>> getApplied_filters() {
         return applied_filters;
+    }
+
+    @Override
+    public void onRefresh() {
+        getRecommended();
+        //movieAdapter.notifyDataSetChanged();
     }
 
     class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.Myholder> {

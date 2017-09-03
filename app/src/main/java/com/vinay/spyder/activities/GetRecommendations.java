@@ -44,8 +44,9 @@ public class GetRecommendations extends AppCompatActivity {
                 ArrayList<String> topmovies = Preferences.getTopRatedMovies(GetRecommendations.this);
                 if (topmovies != null && !topmovies.isEmpty()) {
                     //Collections.sort(topmovies);
+                    int k = (topmovies.size()<3)? topmovies.size():3;
                     final ArrayList<String> similarmovies = new ArrayList<>();
-                    for (int i = 0; i < 3; i++) {
+                    for (int i = 0; i < k; i++) {
                         String url = "https://www.themoviedb.org/movie/" + topmovies.get(i);
                         RequestQueue requestQueue = Volley.newRequestQueue(GetRecommendations.this);
                         final int finalI = i;
