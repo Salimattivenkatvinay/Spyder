@@ -146,6 +146,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="Error Loading"
+            android:layout_centerInParent="true"
             android:textColor="@color/tw__solid_white"
             android:textSize="20sp"/>
     </RelativeLayout>

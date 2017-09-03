@@ -65,6 +65,12 @@ public class RatingActivity extends AppCompatActivity
     FiltersFragment dialogFrag;
     MovieAdapter movieAdapter;
     SwipeRefreshLayout swipeRefreshLayout;
+    static String currentShowingList = "init";
+    String INIT = "init";
+    String RECOMMENDED = "recommended";
+    String FAVOURITES = "favourites";
+    String WATCHLIST = "watch";
+    String RATEDMOVIES = "rated";
 
     DataBaseHelper dataBaseHelper;
     @Override
@@ -75,67 +81,126 @@ public class RatingActivity extends AppCompatActivity
         swipeRefreshLayout=findViewById(R.id.swipe_refresh_layout);
         swipeRefreshLayout.setOnRefreshListener(this);
         fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setVisibility(View.GONE);
+
         view=findViewById(R.id.root_layout);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        currentShowingList = INIT;
 
         setupDrawer();
         rv_movie = findViewById(R.id.rv_movies);
         movieAdapter = new MovieAdapter();
-        RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(RatingActivity.this, LinearLayoutManager.VERTICAL, false);
+        final RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(RatingActivity.this, LinearLayoutManager.VERTICAL, false);
         rv_movie.setLayoutManager(layoutManager);
         rv_movie.setAdapter(movieAdapter);
+        rv_movie.setOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(RecyclerView recyclerView, int dx, int dy) {
+                if (swipeRefreshLayout.isRefreshing())
+                    return;
+
+                LinearLayoutManager lm= (LinearLayoutManager) rv_movie.getLayoutManager();
+                int visibleItemCount = lm.getChildCount();
+                int totalItemCount = lm.getItemCount();
+                int pastVisibleItems = lm.findFirstCompletelyVisibleItemPosition();
+                if (pastVisibleItems + visibleItemCount >= totalItemCount) {
+                    fab.setVisibility(View.VISIBLE);
+                }else {
+                    fab.setVisibility(View.GONE);
+                }
+            }
+        });
         loadList();
         dialogFrag = FiltersFragment.newInstance();
         dialogFrag.setParentFab(fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                dialogFrag.show(getSupportFragmentManager(), dialogFrag.getTag());
+                swipeRefreshLayout.setRefreshing(true);
+              //  dialogFrag.show(getSupportFragmentManager(), dialogFrag.getTag());
+                loadList();
             }
         });
     }
 
+
+
     private void loadList(){
         swipeRefreshLayout.setRefreshing(true);
+        String title = "Spyder";
         if (getIntent() != null && getIntent().getStringArrayListExtra("showingList") != null) {
             mvieId = getIntent().getStringArrayListExtra("showingList");
             rv_movie.getAdapter().notifyDataSetChanged();
             swipeRefreshLayout.setRefreshing(false);
         }else {
-            if (Preferences.isIntialRated(this)){
-                getRecommended();
-            }else {
-                ArrayList<String> tmdbIds = new ArrayList<>();
-                dataBaseHelper = new DataBaseHelper(RatingActivity.this);
+            if (currentShowingList.equals(INIT) || currentShowingList.equals(RECOMMENDED)) {
+                if (Preferences.isIntialRated(this)) {
+                    getRecommended();
+                    title = "Recommended List";
+                } else {
+                    ArrayList<String> tmdbIds = new ArrayList<>();
+                    dataBaseHelper = new DataBaseHelper(RatingActivity.this);
 
-                ArrayList<HashMap<String, String>> arrayList = dataBaseHelper.getMovies((int)(Math.random()*1000), 10, false);
-                Collections.shuffle(arrayList);
-                for (HashMap<String, String> h : arrayList) {
-                    tmdbIds.add(h.get(DataBaseHelper.TMDB_ID));
+                    ArrayList<HashMap<String, String>> arrayList = dataBaseHelper.getMovies((int) (Math.random() * 1000), 15, false);
+                    Collections.shuffle(arrayList);
+                    for (HashMap<String, String> h : arrayList) {
+                        tmdbIds.add(h.get(DataBaseHelper.TMDB_ID));
+                    }
+                    mvieId = tmdbIds;
+                    rv_movie.getAdapter().notifyDataSetChanged();
+                    swipeRefreshLayout.setRefreshing(false);
+                    title = "Spyder";
                 }
-                mvieId = tmdbIds;
-                rv_movie.getAdapter().notifyDataSetChanged();
+            }else {
+                ArrayList<String> temp = new ArrayList<>();
+                if (currentShowingList.equals(RATEDMOVIES)){
+                    temp = Preferences.getRatedMovies(RatingActivity.this);
+                    title = "Rated Movies";
+                }else if (currentShowingList.equals(WATCHLIST)){
+                    temp = Preferences.getWatchList(RatingActivity.this);
+                    title = "Watch List";
+                }else if(currentShowingList.equals(FAVOURITES)){
+                    temp = Preferences.getFavourites(RatingActivity.this);
+                    title = "Favourites";
+                }
+                if (temp != null && temp.size() > 0) {
+                    mvieId = temp;
+                    rv_movie.getAdapter().notifyDataSetChanged();
+                } else
+                    Toast.makeText(RatingActivity.this, "List is Empty", Toast.LENGTH_SHORT).show();
+
                 swipeRefreshLayout.setRefreshing(false);
             }
         }
+        if (null != getSupportActionBar())
+            getSupportActionBar().setTitle(title);
+
+        rv_movie.scrollToPosition(0);
     }
 
     public void showUserList(View view) {
         String title = "";
+        String current = INIT;
         ArrayList<String> temp = new ArrayList<>();
+        swipeRefreshLayout.setRefreshing(true);
         switch (view.getId()) {
             case R.id.recommended:
+                currentShowingList = RECOMMENDED;
                 getRecommended();
+                ((FlowingDrawer) findViewById(R.id.drawerlayout)).closeMenu(true);
                 return;
             case R.id.watchlist:
+                current = WATCHLIST;
                 temp = Preferences.getWatchList(RatingActivity.this);
                 title = "Watch List";
                 break;
             case R.id.favourites:
+                current = FAVOURITES;
                 temp = Preferences.getFavourites(RatingActivity.this);
                 title = "Favourites";
                 break;
             case R.id.ratedmovies:
+                current = RATEDMOVIES;
                 temp = Preferences.getRatedMovies(RatingActivity.this);
                 title = "Rated Movies";
                 break;
@@ -144,14 +209,18 @@ public class RatingActivity extends AppCompatActivity
             if (null != getSupportActionBar())
                 getSupportActionBar().setTitle(title);
             mvieId = temp;
+            currentShowingList = current;
             rv_movie.getAdapter().notifyDataSetChanged();
-        } else
+            rv_movie.scrollToPosition(0);
+        } else {
             Toast.makeText(RatingActivity.this, "List is Empty", Toast.LENGTH_SHORT).show();
-
+        }
+        swipeRefreshLayout.setRefreshing(false);
         ((FlowingDrawer) findViewById(R.id.drawerlayout)).closeMenu(true);
     }
 
     private void getRecommended() {
+        swipeRefreshLayout.setRefreshing(true);
         final ProgressDialog progressDialog = new ProgressDialog(RatingActivity.this);
         progressDialog.setMessage("loading");
         progressDialog.setCancelable(false);
@@ -160,7 +229,7 @@ public class RatingActivity extends AppCompatActivity
         List<String> topmovies = Preferences.getTopRatedMovies(RatingActivity.this);
         if (topmovies != null && !topmovies.isEmpty()) {
             //Collections.sort(topmovies);
-            final int k = (topmovies.size()<3)? topmovies.size():3;
+            final int k = topmovies.size();//(topmovies.size()<3)? topmovies.size():3;
             final ArrayList<String> similarmovies = new ArrayList<>();
             for (int i = 0; i < k; i++) {
                 String url = "https://www.themoviedb.org/movie/" + topmovies.get(i);
@@ -171,11 +240,13 @@ public class RatingActivity extends AppCompatActivity
                     public void onResponse(String response) {
                         Document doc = Jsoup.parse(response);
                         Elements content = doc.getElementsByClass("item mini backdrop mini_card");
-                        progressDialog.setMessage("Task "+(finalI+1)+" of 3");
+                        progressDialog.setMessage("Task "+(finalI+1)+" of "+k);
                         for (Element l : content) {
                             Elements link = l.getElementsByClass("image_content");
                             Elements w = link.get(0).getElementsByTag("a");
-                            similarmovies.add(w.get(0).attr("href").substring(7));
+                            String mv = w.get(0).attr("href").substring(7);
+                            if (!similarmovies.contains(mv))
+                                similarmovies.add(mv);
                         }
 
                         if (finalI == k-1 && similarmovies != null && similarmovies.size() > 0) {
@@ -184,6 +255,7 @@ public class RatingActivity extends AppCompatActivity
                             Collections.shuffle(similarmovies);
                             mvieId = similarmovies;
                             rv_movie.getAdapter().notifyDataSetChanged();
+                            rv_movie.scrollToPosition(0);
                             swipeRefreshLayout.setRefreshing(false);
                         }
                     }
@@ -226,6 +298,8 @@ public class RatingActivity extends AppCompatActivity
                             Log.d("userUrl", url);
                             Glide.with(RatingActivity.this)
                                     .load(url)
+                                    .error(R.drawable.avatar)
+                                    .placeholder(R.drawable.avatar)
                                     .into(userPic);
 
                         } catch (JSONException e) {
@@ -382,6 +456,8 @@ public class RatingActivity extends AppCompatActivity
 
         @Override
         public void onBindViewHolder(final Myholder holder, final int position) {
+            holder.loadingMask.setVisibility(View.VISIBLE);
+            holder.errorMask.setVisibility(View.GONE);
             if (!swipeRefreshLayout.isRefreshing()) {
                 holder.parentView.setOnClickListener(new View.OnClickListener() {
                     @Override
@@ -414,14 +490,18 @@ public class RatingActivity extends AppCompatActivity
 
                                     Glide.with(RatingActivity.this)
                                             .load("http://image.tmdb.org/t/p/w185" + json.getString("poster_path"))
+                                            .error(R.drawable.gradient_1)
+                                            .placeholder(R.drawable.gradient_1)
                                             .into(holder.posterView);
 
                                     Glide.with(RatingActivity.this)
                                             .load("http://image.tmdb.org/t/p/w342" + json.getString("backdrop_path"))
+                                            .error(R.drawable.gradient_2)
+                                            .placeholder(R.drawable.gradient_2)
                                             .into(holder.backdropView);
 
                                     holder.ratingBar.setNumStars(5);
-                                    holder.ratingBar.setRating(Preferences.getRating(RatingActivity.this, mvieId.get(position)));
+                                    holder.ratingBar.setRating(Preferences.getRating(RatingActivity.this, mvieId.get(holder.getAdapterPosition())));
                                     ColorStateList colorStateList = new ColorStateList(states, colors);
                                     holder.ratingBar.setProgressTintList(colorStateList);
                                     holder.ratingBar.setOnRatingChangeListener(new MaterialRatingBar.OnRatingChangeListener() {
@@ -429,8 +509,10 @@ public class RatingActivity extends AppCompatActivity
                                         public void onRatingChanged(MaterialRatingBar ratingBar, float rating) {
                                             Log.d("rating changed", rating + "");
                                             holder.userRatingView.setText(rating + "");
-                                            Preferences.rateMovie(RatingActivity.this, mvieId.get(position), rating + "");
-                                            if (Preferences.getNoOfRatedMovies(RatingActivity.this) == 5) {
+                                            Preferences.rateMovie(RatingActivity.this, mvieId.get(holder.getAdapterPosition()), rating + "");
+                                            int n = Preferences.getNoOfRatedMovies(RatingActivity.this);
+                                            if(n < 5) Preferences.setInitialRated(RatingActivity.this,false);
+                                            if ( n == 5) {
                                                 startActivity(new Intent(RatingActivity.this, GetRecommendations.class));
                                             }
                                         }
@@ -442,8 +524,11 @@ public class RatingActivity extends AppCompatActivity
                                         JSONObject k = array.getJSONObject(i);
                                         genres += k.getString("name") + " | ";
 
-                                    }
+                                }
+                                if (genres.length()>3)
                                     holder.genreView.setText(genres.substring(0, genres.length() - 3));
+                                else
+                                    holder.genreView.setText("N/A");
 
                                     holder.loadingMask.setVisibility(View.GONE);
 //                                getTrailerPath();

@@ -41,10 +41,14 @@ public class Preferences {
         return preferences.getBoolean("is_initial_rated", false);
     }
 
-    public static void setInitialRated(Context context) {
+    public static void setInitialRated(Context context){
+        setInitialRated(context,true);
+    }
+
+    public static void setInitialRated(Context context, boolean isRated) {
         SharedPreferences preferences = context.getSharedPreferences("constants", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
-        editor.putBoolean("is_initial_rated", true);
+        editor.putBoolean("is_initial_rated", isRated);
         editor.apply();
     }
 
@@ -143,10 +147,10 @@ public class Preferences {
             }
         }
 
-        if (topmovies.size()<3){
+        if (topmovies.size()<5){
             return topmovies;
         }else {
-            return topmovies.subList(0,2);
+            return topmovies.subList(0,4);
         }
     }
 

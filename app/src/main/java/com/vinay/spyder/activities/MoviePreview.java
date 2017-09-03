@@ -129,10 +129,14 @@ public class MoviePreview extends YouTubeBaseActivity {
 
         Glide.with(MoviePreview.this)
                 .load("http://image.tmdb.org/t/p/w185"+posterpath)
+                .error(R.drawable.gradient_1)
+                .placeholder(R.drawable.gradient_1)
                 .into(posterView);
 
         Glide.with(MoviePreview.this)
                 .load("http://image.tmdb.org/t/p/w342"+backdroppath)
+                .error(R.drawable.gradient_2)
+                .placeholder(R.drawable.gradient_2)
                 .into(backdropView);
 
         ratingBar.setNumStars(5);

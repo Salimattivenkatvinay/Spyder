@@ -46,6 +46,7 @@
                 android:src="@drawable/ic_filter"
                 android:tint="@color/filters_chips"
                 app:backgroundTint="@color/filtersfab"
+                android:visibility="gone"
                 app:elevation="0dp" />
         </RelativeLayout>
     </android.support.v4.widget.SwipeRefreshLayout>

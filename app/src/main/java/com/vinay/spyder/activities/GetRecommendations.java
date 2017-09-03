@@ -45,7 +45,7 @@ public class GetRecommendations extends AppCompatActivity {
                 List<String> topmovies = Preferences.getTopRatedMovies(GetRecommendations.this);
                 if (topmovies != null && !topmovies.isEmpty()) {
                     //Collections.sort(topmovies);
-                    final int k = (topmovies.size()<3)? topmovies.size():3;
+                    final int k = topmovies.size();//(topmovies.size()<3)? topmovies.size():3;
                     final ArrayList<String> similarmovies = new ArrayList<>();
                     for (int i = 0; i < k; i++) {
                         String url = "https://www.themoviedb.org/movie/" + topmovies.get(i);
@@ -56,11 +56,13 @@ public class GetRecommendations extends AppCompatActivity {
                             public void onResponse(String response) {
                                 Document doc = Jsoup.parse(response);
                                 Elements content = doc.getElementsByClass("item mini backdrop mini_card");
-                                progressDialog.setMessage("Task "+(finalI+1)+" of 3");
+                                progressDialog.setMessage("Task "+(finalI+1)+" of "+k);
                                 for (Element l : content) {
                                     Elements link = l.getElementsByClass("image_content");
                                     Elements w = link.get(0).getElementsByTag("a");
-                                    similarmovies.add(w.get(0).attr("href").substring(7));
+                                    String mv = w.get(0).attr("href").substring(7);
+                                    if (!similarmovies.contains(mv))
+                                        similarmovies.add(mv);
                                 }
 
                                 if (finalI == k-1 && similarmovies != null && similarmovies.size() > 0) {
