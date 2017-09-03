@@ -36,8 +36,8 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:theme="@style/Theme.AppCompat" />
         <activity android:name=".activities.GetRecommendations" />
-        <activity android:name=".activities.CrewInfo" />
-        <activity android:name=".activities.castDetActivity"></activity>
+        <activity android:name=".activities.CrewInfo"
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
     </application>
 
 </manifest>

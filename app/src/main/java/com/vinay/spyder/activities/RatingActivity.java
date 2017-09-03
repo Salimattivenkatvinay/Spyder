@@ -382,86 +382,86 @@ public class RatingActivity extends AppCompatActivity
 
         @Override
         public void onBindViewHolder(final Myholder holder, final int position) {
+            if (!swipeRefreshLayout.isRefreshing()) {
+                holder.parentView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        Intent intent = new Intent(RatingActivity.this, MoviePreview.class);
+                        intent.putExtra("tmdbId", mvieId.get(position));
+                        startActivity(intent);
+                    }
+                });
+                RequestQueue queue = Volley.newRequestQueue(RatingActivity.this);
+                String url = "http://api.themoviedb.org/3/movie/" + mvieId.get(position) + "?api_key=7e8f60e325cd06e164799af1e317d7a7";
+                StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                        new Response.Listener<String>() {
+                            @Override
+                            public void onResponse(String response) {
+                                try {
+                                    JSONObject json = new JSONObject(response);
+                                    holder.titleView.setText(json.getString("original_title"));
+                                    holder.taglineView.setText(json.getString("tagline"));
+                                    String voteavg = json.getString("vote_average");
+                                    holder.tmbdRateView.setText(voteavg);
+                                    DisplayMetrics metrics = new DisplayMetrics();
+                                    getWindowManager().getDefaultDisplay().getMetrics(metrics);
+                                    RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(metrics.widthPixels, (int) (0.56 * metrics.widthPixels));
+                                    holder.backdropView.setLayoutParams(layoutParams);
+                                    if (dataBaseHelper != null)
+                                        holder.yearView.setText(dataBaseHelper.getYear(mvieId.get(position)));//"year : " + json.getString("release_date").substring(0,4));
+                                    else
+                                        holder.yearView.setText("year : " + json.getString("release_date").substring(0, 4));
 
-            holder.parentView.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent intent = new Intent(RatingActivity.this, MoviePreview.class);
-                    intent.putExtra("tmdbId", mvieId.get(position));
-                    startActivity(intent);
-                }
-            });
-            RequestQueue queue = Volley.newRequestQueue(RatingActivity.this);
-            String url = "http://api.themoviedb.org/3/movie/" + mvieId.get(position) + "?api_key=7e8f60e325cd06e164799af1e317d7a7";
-            StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                    new Response.Listener<String>() {
-                        @Override
-                        public void onResponse(String response) {
-                            try {
-                                JSONObject json = new JSONObject(response);
-                                holder.titleView.setText(json.getString("original_title"));
-                                holder.taglineView.setText(json.getString("tagline"));
-                                String voteavg = json.getString("vote_average");
-                                holder.tmbdRateView.setText(voteavg);
-                                DisplayMetrics metrics = new DisplayMetrics();
-                                getWindowManager().getDefaultDisplay().getMetrics(metrics);
-                                RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(metrics.widthPixels,(int)(0.56*metrics.widthPixels));
-                                holder.backdropView.setLayoutParams(layoutParams);
-                                if (dataBaseHelper!=null)
-                                    holder.yearView.setText(dataBaseHelper.getYear(mvieId.get(position)));//"year : " + json.getString("release_date").substring(0,4));
-                                else
-                                    holder.yearView.setText("year : " + json.getString("release_date").substring(0,4));
+                                    Glide.with(RatingActivity.this)
+                                            .load("http://image.tmdb.org/t/p/w185" + json.getString("poster_path"))
+                                            .into(holder.posterView);
 
-                                Glide.with(RatingActivity.this)
-                                        .load("http://image.tmdb.org/t/p/w185"+json.getString("poster_path"))
-                                        .into(holder.posterView);
+                                    Glide.with(RatingActivity.this)
+                                            .load("http://image.tmdb.org/t/p/w342" + json.getString("backdrop_path"))
+                                            .into(holder.backdropView);
 
-                                Glide.with(RatingActivity.this)
-                                        .load("http://image.tmdb.org/t/p/w342"+json.getString("backdrop_path"))
-                                        .into(holder.backdropView);
-
-                                holder.ratingBar.setNumStars(5);
-                                holder.ratingBar.setRating(Preferences.getRating(RatingActivity.this,mvieId.get(position)));
-                                ColorStateList colorStateList = new ColorStateList(states,colors);
-                                holder.ratingBar.setProgressTintList(colorStateList);
-                                holder.ratingBar.setOnRatingChangeListener(new MaterialRatingBar.OnRatingChangeListener() {
-                                    @Override
-                                    public void onRatingChanged(MaterialRatingBar ratingBar, float rating) {
-                                        Log.d("rating changed",rating+"");
-                                        holder.userRatingView.setText(rating+"");
-                                        Preferences.rateMovie(RatingActivity.this,mvieId.get(holder.getAdapterPosition()),rating+"");
-                                        if (Preferences.getNoOfRatedMovies(RatingActivity.this) == 5 ){
-                                            startActivity(new Intent(RatingActivity.this, GetRecommendations.class));
+                                    holder.ratingBar.setNumStars(5);
+                                    holder.ratingBar.setRating(Preferences.getRating(RatingActivity.this, mvieId.get(position)));
+                                    ColorStateList colorStateList = new ColorStateList(states, colors);
+                                    holder.ratingBar.setProgressTintList(colorStateList);
+                                    holder.ratingBar.setOnRatingChangeListener(new MaterialRatingBar.OnRatingChangeListener() {
+                                        @Override
+                                        public void onRatingChanged(MaterialRatingBar ratingBar, float rating) {
+                                            Log.d("rating changed", rating + "");
+                                            holder.userRatingView.setText(rating + "");
+                                            Preferences.rateMovie(RatingActivity.this, mvieId.get(position), rating + "");
+                                            if (Preferences.getNoOfRatedMovies(RatingActivity.this) == 5) {
+                                                startActivity(new Intent(RatingActivity.this, GetRecommendations.class));
+                                            }
                                         }
+                                    });
+
+                                    JSONArray array = json.getJSONArray("genres");
+                                    String genres = "";
+                                    for (int i = 0; i < array.length(); i++) {
+                                        JSONObject k = array.getJSONObject(i);
+                                        genres += k.getString("name") + " | ";
+
                                     }
-                                });
+                                    holder.genreView.setText(genres.substring(0, genres.length() - 3));
 
-                                JSONArray array = json.getJSONArray("genres");
-                                String genres = "";
-                                for (int i = 0; i < array.length(); i++) {
-                                    JSONObject k = array.getJSONObject(i);
-                                    genres += k.getString("name") + " | ";
-
-                                }
-                                holder.genreView.setText(genres.substring(0, genres.length() - 3));
-
-                                holder.loadingMask.setVisibility(View.GONE);
+                                    holder.loadingMask.setVisibility(View.GONE);
 //                                getTrailerPath();
 
-                            } catch (JSONException e) {
-                                e.printStackTrace();
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
                             }
-                        }
-                    }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    holder.loadingMask.setVisibility(View.GONE);
-                    holder.errorMask.setVisibility(View.VISIBLE);
-                    Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
-                }
-            });
-            queue.add(stringRequest);
-
+                        }, new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        holder.loadingMask.setVisibility(View.GONE);
+                        holder.errorMask.setVisibility(View.VISIBLE);
+                        Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                    }
+                });
+                queue.add(stringRequest);
+            }
         }
 
         void setupUI(Myholder myholder) {

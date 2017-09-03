@@ -407,7 +407,7 @@ public class MoviePreview extends YouTubeBaseActivity {
         }
 
         @Override
-        public void onBindViewHolder(Myholder holder, int position) {
+        public void onBindViewHolder(final Myholder holder, final int position) {
             holder.titleView.setText(crewItems.get(position).getName() + "\n" + crewItems.get(position).getRole());
             Glide.with(MoviePreview.this)
                     .load("http://image.tmdb.org/t/p/w185"+crewItems.get(position).getProfile_path())
@@ -417,8 +417,7 @@ public class MoviePreview extends YouTubeBaseActivity {
             holder.imageView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-
-                    startActivity(new Intent(MoviePreview.this,castDetActivity.class));
+                    startActivity(new Intent(MoviePreview.this,CrewInfo.class).putExtra("cid",crewItems.get(position).getId()));
                 }
             });
         }
