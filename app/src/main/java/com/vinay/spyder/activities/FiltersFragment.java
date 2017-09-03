@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.allattentionhere.fabulousfilter.AAH_FabulousFragment;
 import com.google.android.flexbox.FlexboxLayout;
 import com.vinay.spyder.R;
+import com.vinay.spyder.utils.DataBaseHelper;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -32,7 +33,7 @@ public class FiltersFragment extends AAH_FabulousFragment {
 
     ArrayMap<String, List<String>> applied_filters = new ArrayMap<>();
     List<TextView> textviews = new ArrayList<>();
-
+    DataBaseHelper dataBaseHelper;
     TabLayout tabs_types;
 
     ImageButton imgbtn_refresh, imgbtn_apply;
@@ -50,7 +51,7 @@ public class FiltersFragment extends AAH_FabulousFragment {
         super.onCreate(savedInstanceState);
         applied_filters = ((RatingActivity) getActivity()).getApplied_filters();
         metrics = this.getResources().getDisplayMetrics();
-
+        dataBaseHelper = new DataBaseHelper(getActivity());
         for (Map.Entry<String, List<String>> entry : applied_filters.entrySet()) {
             Log.d("k9res", "from activity: " + entry.getKey());
             for (String s : entry.getValue()) {
@@ -169,7 +170,8 @@ public class FiltersFragment extends AAH_FabulousFragment {
                         "Thriller", "War", "Western"));
                 break;
             case "year":
-                keys = getUniqueYearKeys();
+
+                keys = dataBaseHelper.getYears();
                 break;
         }
 

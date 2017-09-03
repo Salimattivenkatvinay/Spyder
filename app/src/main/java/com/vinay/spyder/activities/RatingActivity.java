@@ -76,14 +76,17 @@ public class RatingActivity extends AppCompatActivity
         if (getIntent() != null && getIntent().getStringArrayListExtra("showingList") != null) {
             mvieId = getIntent().getStringArrayListExtra("showingList");
         }else {
-            ArrayList<String> tmdbIds = new ArrayList<>();
-            dataBaseHelper = new DataBaseHelper(RatingActivity.this);
-            ArrayList<HashMap<String,String>> arrayList = dataBaseHelper.getMovies(2,10,false);
-            for (HashMap<String,String> h : arrayList){
-                tmdbIds.add(h.get(DataBaseHelper.TMDB_ID));
+            if (Preferences.isIntialRated(this)){
+                getRecommended();
+            }else {
+                ArrayList<String> tmdbIds = new ArrayList<>();
+                dataBaseHelper = new DataBaseHelper(RatingActivity.this);
+                ArrayList<HashMap<String, String>> arrayList = dataBaseHelper.getMovies(2, 10, false);
+                for (HashMap<String, String> h : arrayList) {
+                    tmdbIds.add(h.get(DataBaseHelper.TMDB_ID));
+                }
+                mvieId = tmdbIds;
             }
-            mvieId = tmdbIds;
-
             /*
         } else {
             mvieId.add("155");
@@ -250,10 +253,16 @@ public class RatingActivity extends AppCompatActivity
                         Log.d("k9res", "entry.key: " + entry.getKey());
                         switch (entry.getKey()) {
                             case "genre":
-                                filteredList = mData.getGenreFilteredMovies(entry.getValue());
+                                List<HashMap<String,String>> a = dataBaseHelper.getFilteredList(0,20,false,entry.getValue(),null);
+                                for (HashMap<String,String> h : a){
+                                    filteredList.add(h.get(DataBaseHelper.TMDB_ID));
+                                }
                                 break;
                             case "year":
-                                filteredList = mData.getYearFilteredMovies(entry.getValue());
+                                List<HashMap<String,String>> b = dataBaseHelper.getFilteredList(0,20, false, null, entry.getValue());
+                                for (HashMap<String,String> h : b){
+                                    filteredList.add(h.get(DataBaseHelper.TMDB_ID));
+                                }
                                 break;
                         }
                     }
@@ -263,7 +272,12 @@ public class RatingActivity extends AppCompatActivity
                     movieAdapter.notifyDataSetChanged();
 
                 } else {
-                    mvieId.addAll(mData.getAllMovies());
+                    List<String> list = new ArrayList<>();
+                    List<HashMap<String,String>> b = dataBaseHelper.getMovies(0,50,false);
+                    for (HashMap<String,String> h : b){
+                        list.add(h.get(DataBaseHelper.TMDB_ID));
+                    }
+                    mvieId.addAll(list);
                     movieAdapter.notifyDataSetChanged();
                 }
             }

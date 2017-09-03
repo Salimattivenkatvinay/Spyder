@@ -8,6 +8,7 @@ import com.readystatesoftware.sqliteasset.SQLiteAssetHelper;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 
 public class DataBaseHelper extends SQLiteAssetHelper {
@@ -56,13 +57,12 @@ public class DataBaseHelper extends SQLiteAssetHelper {
         return null;
     }
 
-    public ArrayList<HashMap<String,String>> getFilteredList(int start_index,
-                                                             int no_of_results,
-                                                             boolean asc,
-                                                             ArrayList<String> genres,
-                                                             ArrayList<String> years){
+    public List<HashMap<String,String>> getFilteredList(int start_index,
+                                                        int no_of_results,
+                                                        boolean asc,
+                                                        List<String> genres, List<String> years){
 
-        ArrayList<HashMap<String,String>> arrayList = new ArrayList<>();
+        List<HashMap<String,String>> arrayList = new ArrayList<>();
         SQLiteDatabase database = this.getReadableDatabase();
 
         boolean genreFilter = (genres!=null)&&(genres.size()>0),
@@ -74,7 +74,7 @@ public class DataBaseHelper extends SQLiteAssetHelper {
             for(String genre : genres){
                 selectQuery += ( "%"+genre+ "%" + "','");
             }
-            selectQuery = selectQuery.substring(0, selectQuery.length()-3);
+            selectQuery = selectQuery.substring(0, selectQuery.length()-2);
             selectQuery += ") ";
         }
 
@@ -84,7 +84,7 @@ public class DataBaseHelper extends SQLiteAssetHelper {
             for(String year : years){
                 selectQuery += (year + "','");
             }
-            selectQuery = selectQuery.substring(0, selectQuery.length()-3);
+            selectQuery = selectQuery.substring(0, selectQuery.length()-2);
             selectQuery += ") ";
         }
 
