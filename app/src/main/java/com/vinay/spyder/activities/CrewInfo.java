@@ -1,9 +1,11 @@
 package com.vinay.spyder.activities;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -48,7 +50,7 @@ public class CrewInfo extends AppCompatActivity {
                     public void onResponse(String response) {
                         pb.dismiss();
                         try {
-                            JSONObject json = new JSONObject(response);
+                            final JSONObject json = new JSONObject(response);
                             ((TextView)findViewById(R.id.tv_overview)).append(json.getString("biography"));
                             ((TextView)findViewById(R.id.tv_birth)).append(json.getString("birthday"));
                             if(json.getString("deathday")!=null)
@@ -56,11 +58,18 @@ public class CrewInfo extends AppCompatActivity {
                             String g=json.getString("gender").equals("1")?"female":"male";
                             ((TextView)findViewById(R.id.tv_gender)).append(g);
                             Glide.with(CrewInfo.this)
-                                    .load("http://image.tmdb.org/t/p/w185"+json.getString("profile_path"))
+                                    .load("http://image.tmdb.org/t/p/w342"+json.getString("profile_path"))
                                     .placeholder(R.drawable.avatar)
                                     .error(R.drawable.avatar)
                                     .into((ImageView) findViewById(R.id.iv_profile));
                             collapsingToolbarLayout.setTitle(json.getString("name"));
+                            final String url="http://www.imdb.com/name/"+json.getString("imdb_id");
+                            findViewById(R.id.ib_imdb).setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    startActivity(new Intent(CrewInfo.this,WebviewActivity.class).putExtra("url",url));
+                                }
+                            });
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }

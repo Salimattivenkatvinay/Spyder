@@ -36,8 +36,11 @@
             android:configChanges="keyboardHidden|orientation|screenSize"
             android:theme="@style/Theme.AppCompat" />
         <activity android:name=".activities.GetRecommendations" />
-        <activity android:name=".activities.CrewInfo"
-            android:theme="@style/Theme.AppCompat.NoActionBar"/>
+        <activity
+            android:name=".activities.CrewInfo"
+            android:theme="@style/Theme.AppCompat.NoActionBar" />
+        <activity android:name=".activities.WebviewActivity"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"/>
     </application>
 
 </manifest>
