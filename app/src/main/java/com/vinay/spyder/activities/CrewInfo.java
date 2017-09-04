@@ -51,17 +51,24 @@ public class CrewInfo extends AppCompatActivity {
                         pb.dismiss();
                         try {
                             final JSONObject json = new JSONObject(response);
-                            ((TextView)findViewById(R.id.tv_overview)).append(json.getString("biography"));
-                            ((TextView)findViewById(R.id.tv_birth)).append(json.getString("birthday"));
-                            if(json.getString("deathday")!=null)
-                            ((TextView)findViewById(R.id.tv_death)).append(json.getString("deathday"));
-                            String g=json.getString("gender").equals("1")?"female":"male";
-                            ((TextView)findViewById(R.id.tv_gender)).append(g);
+                            if (json.has("biography"))
+                                ((TextView)findViewById(R.id.tv_overview)).setText(json.getString("biography"));
+                            if (json.has("birthday"))
+                                ((TextView)findViewById(R.id.tv_birth)).setText(json.getString("birthday"));
+                            if (json.has("deathday")){
+                               if(json.getString("deathday")!=null)
+                            ((TextView)findViewById(R.id.tv_death)).setText(json.getString("deathday"));
+                            }
+                            if (json.has("gender")) {
+                                String g = json.getString("gender").equals("1") ? "female" : "male";
+                                ((TextView) findViewById(R.id.tv_gender)).append(g);
+                            }
                             Glide.with(CrewInfo.this)
                                     .load("http://image.tmdb.org/t/p/w342"+json.getString("profile_path"))
                                     .placeholder(R.drawable.avatar)
                                     .error(R.drawable.avatar)
                                     .into((ImageView) findViewById(R.id.iv_profile));
+
                             collapsingToolbarLayout.setTitle(json.getString("name"));
                             final String url="http://www.imdb.com/name/"+json.getString("imdb_id");
                             findViewById(R.id.ib_imdb).setOnClickListener(new View.OnClickListener() {
@@ -85,7 +92,7 @@ public class CrewInfo extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 pb.dismiss();
-                Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+
             }
         });
         queue.add(stringRequest);

@@ -99,38 +99,40 @@ public class Preferences {
     public static void rateMovie(Context context, String tmdb_id, String rating) {
         TinyDB tinyDB=new TinyDB(context);
         ArrayList<LinkedTreeMap<String, String>> movies = tinyDB.getObject("ratedmovies", ArrayList.class);
-        if (movies==null) {
-            movies = new ArrayList<LinkedTreeMap<String, String>>();
-            LinkedTreeMap<String, String> v = new LinkedTreeMap<>();
-            v.put("movie", tmdb_id);
-            v.put("rating", rating);
-            movies.add(v);
-            increaseNoOfRatedMovies(context);
-
-        } else {
-            boolean flag = true;
-            for (LinkedTreeMap curMap : movies) {
-                //If this map has the object, that is the key doesn't return a null object
-                if ((tmdb_id.equals((String) curMap.get("movie")))) {
-                    //Stop traversing because we are done
-                    movies.remove(curMap);
-                    LinkedTreeMap<String, String> v = new LinkedTreeMap<>();
-                    v.put("movie", tmdb_id);
-                    v.put("rating", rating);
-                    movies.add(v);
-                    flag = false;
-                    break;
-                }
-            }
-            if (flag) {
+        if (Float.compare(Float.parseFloat(rating),0.0f)>0) {
+            if (movies == null) {
+                movies = new ArrayList<LinkedTreeMap<String, String>>();
                 LinkedTreeMap<String, String> v = new LinkedTreeMap<>();
                 v.put("movie", tmdb_id);
                 v.put("rating", rating);
                 movies.add(v);
                 increaseNoOfRatedMovies(context);
+
+            } else {
+                boolean flag = true;
+                for (LinkedTreeMap curMap : movies) {
+                    //If this map has the object, that is the key doesn't return a null object
+                    if ((tmdb_id.equals((String) curMap.get("movie")))) {
+                        //Stop traversing because we are done
+                        movies.remove(curMap);
+                        LinkedTreeMap<String, String> v = new LinkedTreeMap<>();
+                        v.put("movie", tmdb_id);
+                        v.put("rating", rating);
+                        movies.add(v);
+                        flag = false;
+                        break;
+                    }
+                }
+                if (flag) {
+                    LinkedTreeMap<String, String> v = new LinkedTreeMap<>();
+                    v.put("movie", tmdb_id);
+                    v.put("rating", rating);
+                    movies.add(v);
+                    increaseNoOfRatedMovies(context);
+                }
             }
+            tinyDB.putObject("ratedmovies", movies);
         }
-        tinyDB.putObject("ratedmovies",movies);
     }
 
     public static List<String> getTopRatedMovies(Context context) {

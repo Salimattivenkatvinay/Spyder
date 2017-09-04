@@ -45,7 +45,7 @@ public class GetRecommendations extends AppCompatActivity {
                 List<String> topmovies = Preferences.getTopRatedMovies(GetRecommendations.this);
                 if (topmovies != null && !topmovies.isEmpty()) {
                     //Collections.sort(topmovies);
-                    final int k = topmovies.size();//(topmovies.size()<3)? topmovies.size():3;
+                    final int k = (topmovies.size()<3)? topmovies.size():3;
                     final ArrayList<String> similarmovies = new ArrayList<>();
                     ArrayList<String> rated = new ArrayList<>();
                     rated = Preferences.getRatedMovies(GetRecommendations.this);
@@ -67,7 +67,7 @@ public class GetRecommendations extends AppCompatActivity {
                                     if (!similarmovies.contains(mv))
                                         similarmovies.add(mv);
 
-                                    if (finalRated != null && !finalRated.contains(mv))
+                                    if (finalRated != null && finalRated.contains(mv))
                                         similarmovies.remove(mv);
                                 }
 

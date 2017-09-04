@@ -149,9 +149,10 @@ public class MoviePreview extends YouTubeBaseActivity {
 
         ratingBar.setNumStars(5);
         //ratingBar.setRating(((int)Float.parseFloat(voteavg))/2.0f);
+
         ratingBar.setRating(Preferences.getRating(MoviePreview.this,tmdb_id));
 
-        ratingView.setText(((int)Float.parseFloat(voteavg))/2.0f +"");
+      //  ratingView.setText(((int)Float.parseFloat(voteavg))/2.0f +"");
 
         ColorStateList colorStateList = new ColorStateList(states,colors);
         ratingBar.setProgressTintList(colorStateList);

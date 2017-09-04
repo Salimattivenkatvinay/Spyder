@@ -247,12 +247,15 @@ public class RatingActivity extends AppCompatActivity
         List<String> topmovies = Preferences.getTopRatedMovies(RatingActivity.this);
         if (topmovies != null && !topmovies.isEmpty()) {
             //Collections.sort(topmovies);
-            final int k = topmovies.size();//(topmovies.size()<3)? topmovies.size():3;
+            final int k = (topmovies.size()<3)? topmovies.size():3;
             final ArrayList<String> similarmovies = new ArrayList<>();
+            ArrayList<String> rated = new ArrayList<>();
+            rated = Preferences.getRatedMovies(RatingActivity.this);
             for (int i = 0; i < k; i++) {
                 String url = "https://www.themoviedb.org/movie/" + topmovies.get(i);
                 RequestQueue requestQueue = Volley.newRequestQueue(RatingActivity.this);
                 final int finalI = i;
+                final ArrayList<String> finalRated = rated;
                 StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -265,6 +268,9 @@ public class RatingActivity extends AppCompatActivity
                             String mv = w.get(0).attr("href").substring(7);
                             if (!similarmovies.contains(mv))
                                 similarmovies.add(mv);
+
+                            if (finalRated != null && finalRated.contains(mv))
+                                similarmovies.remove(mv);
                         }
 
                         if (finalI == k-1 && similarmovies != null && similarmovies.size() > 0) {
@@ -519,7 +525,9 @@ public class RatingActivity extends AppCompatActivity
                                             .into(holder.backdropView);
 
                                     holder.ratingBar.setNumStars(5);
-                                    holder.ratingBar.setRating(Preferences.getRating(RatingActivity.this, mvieId.get(holder.getAdapterPosition())));
+                                    if (currentShowingList.equals(RATEDMOVIES) || currentShowingList.equals(WATCHLIST) || currentShowingList.equals(FAVOURITES))
+                                        holder.ratingBar.setRating(Preferences.getRating(RatingActivity.this, mvieId.get(holder.getAdapterPosition())));
+
                                     ColorStateList colorStateList = new ColorStateList(states, colors);
                                     holder.ratingBar.setProgressTintList(colorStateList);
                                     holder.ratingBar.setOnRatingChangeListener(new MaterialRatingBar.OnRatingChangeListener() {
