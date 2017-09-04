@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.mxn.soul.flowingdrawer_core.FlowingDrawer xmlns:android="http://schemas.android.com/apk/res/android"
+<com.mxn.soul.flowingdrawer_core.FlowingDrawer
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/drawerlayout"
     android:layout_width="match_parent"
@@ -32,6 +33,7 @@
                 app:popupTheme="@style/ThemeOverlay.AppCompat.Light" />
 
             <android.support.v7.widget.RecyclerView
+                android:layout_below="@+id/toolbar"
                 android:id="@+id/rv_movies"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
