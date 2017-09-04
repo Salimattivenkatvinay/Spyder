@@ -83,6 +83,14 @@ public class MoviePreview extends YouTubeBaseActivity {
         if (getIntent()!=null && getIntent().getStringExtra("tmdbId")!=null){
             tmdb_id = getIntent().getStringExtra("tmdbId");
             getMovieData();
+            final String url="https://www.themoviedb.org/movie/"+tmdb_id;
+            findViewById(R.id.ib_tmdb).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    startActivity(new Intent(MoviePreview.this,WebviewActivity.class).putExtra("url",url));
+
+                }
+            });
         }
     }
     private int[][] states = new int[][] {
@@ -292,6 +300,15 @@ public class MoviePreview extends YouTubeBaseActivity {
 
                             }
                             genres=genres.substring(0,genres.length()-3);
+
+                            final String url="http://www.imdb.com/title/"+imdb_id;
+                            findViewById(R.id.ib_imdb).setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    startActivity(new Intent(MoviePreview.this,WebviewActivity.class).putExtra("url",url));
+
+                                }
+                            });
 
                             getTrailerPath();
 

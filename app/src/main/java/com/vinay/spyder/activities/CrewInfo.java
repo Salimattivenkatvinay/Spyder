@@ -70,6 +70,13 @@ public class CrewInfo extends AppCompatActivity {
                                     startActivity(new Intent(CrewInfo.this,WebviewActivity.class).putExtra("url",url));
                                 }
                             });
+                            final String ur="https://www.themoviedb.org/person/"+getIntent().getExtras().getString("cid","");
+                            findViewById(R.id.ib_tmdb).setOnClickListener(new View.OnClickListener() {
+                                @Override
+                                public void onClick(View view) {
+                                    startActivity(new Intent(CrewInfo.this,WebviewActivity.class).putExtra("url",ur));
+                                }
+                            });
                         } catch (JSONException e) {
                             e.printStackTrace();
                         }
