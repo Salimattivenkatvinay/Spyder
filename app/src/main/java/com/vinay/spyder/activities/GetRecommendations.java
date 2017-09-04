@@ -47,10 +47,13 @@ public class GetRecommendations extends AppCompatActivity {
                     //Collections.sort(topmovies);
                     final int k = topmovies.size();//(topmovies.size()<3)? topmovies.size():3;
                     final ArrayList<String> similarmovies = new ArrayList<>();
+                    ArrayList<String> rated = new ArrayList<>();
+                    rated = Preferences.getRatedMovies(GetRecommendations.this);
                     for (int i = 0; i < k; i++) {
                         String url = "https://www.themoviedb.org/movie/" + topmovies.get(i);
                         RequestQueue requestQueue = Volley.newRequestQueue(GetRecommendations.this);
                         final int finalI = i;
+                        final ArrayList<String> finalRated = rated;
                         StringRequest stringRequest = new StringRequest(Request.Method.GET, url, new Response.Listener<String>() {
                             @Override
                             public void onResponse(String response) {
@@ -63,12 +66,16 @@ public class GetRecommendations extends AppCompatActivity {
                                     String mv = w.get(0).attr("href").substring(7);
                                     if (!similarmovies.contains(mv))
                                         similarmovies.add(mv);
+
+                                    if (finalRated != null && !finalRated.contains(mv))
+                                        similarmovies.remove(mv);
                                 }
 
                                 if (finalI == k-1 && similarmovies != null && similarmovies.size() > 0) {
                                     Log.e("key", similarmovies.toString());
                                     progressDialog.dismiss();
                                     Collections.shuffle(similarmovies);
+
                                     intent.putStringArrayListExtra("showingList", similarmovies);
                                     startActivity(intent);
                                 }

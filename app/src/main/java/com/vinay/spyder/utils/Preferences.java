@@ -36,6 +36,17 @@ public class Preferences {
         return null;
     }
 
+
+    public static void logOut(Context context){
+        SharedPreferences preferences = context.getSharedPreferences("login", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        if (preferences.getString("password", null) != "" && preferences.getString("password", null) != null) {
+            editor.remove("password");
+            editor.remove("email");
+        }
+        editor.apply();
+    }
+
     public static boolean isIntialRated(Context context) {
         SharedPreferences preferences = context.getSharedPreferences("constants", Context.MODE_PRIVATE);
         return preferences.getBoolean("is_initial_rated", false);
@@ -162,9 +173,7 @@ public class Preferences {
             return null;
         }
         for (int i = 0; i < movies.size(); i++) {
-            if (Float.compare(Float.parseFloat(movies.get(i).get("rating")), 2.5f) >= 0) {
-                topmovies.add(movies.get(i).get("movie"));
-            }
+            topmovies.add(movies.get(i).get("movie"));
         }
         return topmovies;
     }
@@ -251,4 +260,5 @@ public class Preferences {
             return arrayList;
         }
     }
+
 }

@@ -17,6 +17,8 @@ import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
@@ -75,23 +77,11 @@ public class RatingActivity extends AppCompatActivity
     String RATEDMOVIES = "rated";
 
     DataBaseHelper dataBaseHelper;
+    FlowingDrawer drawer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_rating1);
-
-        Toolbar toolbar=findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
-        getSupportActionBar().setHomeButtonEnabled(false);
-        toolbar.setNavigationIcon(R.drawable.com_facebook_button_icon);
-        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-
-            }
-        });
-
 
         view = findViewById(R.id.root_layout);
         swipeRefreshLayout=findViewById(R.id.swipe_refresh_layout);
@@ -103,7 +93,21 @@ public class RatingActivity extends AppCompatActivity
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         currentShowingList = INIT;
 
+        drawer = ((FlowingDrawer) findViewById(R.id.drawerlayout));
         setupDrawer();
+
+        Toolbar toolbar=findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        getSupportActionBar().setHomeButtonEnabled(false);
+        toolbar.setNavigationIcon(R.drawable.ic_dehaze_black_24dp);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                drawer.toggleMenu(true);
+            }
+        });
+
         rv_movie = findViewById(R.id.rv_movies);
         movieAdapter = new MovieAdapter();
         final RecyclerView.LayoutManager layoutManager = new LinearLayoutManager(RatingActivity.this, LinearLayoutManager.VERTICAL, false);
@@ -138,8 +142,6 @@ public class RatingActivity extends AppCompatActivity
             }
         });
     }
-
-
 
     private void loadList(){
         swipeRefreshLayout.setRefreshing(true);
