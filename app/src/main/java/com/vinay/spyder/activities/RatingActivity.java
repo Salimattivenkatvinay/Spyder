@@ -1,6 +1,8 @@
 package com.vinay.spyder.activities;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.res.ColorStateList;
@@ -77,6 +79,21 @@ public class RatingActivity extends AppCompatActivity
     String RATEDMOVIES = "rated";
 
     DataBaseHelper dataBaseHelper;
+
+    @Override
+    public void onBackPressed() {
+        new AlertDialog.Builder(RatingActivity.this)
+                .setTitle("Confirm")
+                .setMessage("Do you really want to exit?")
+                .setIcon(android.R.drawable.ic_dialog_alert)
+                .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        RatingActivity.super.onBackPressed();
+                    }})
+                .setNegativeButton(android.R.string.no, null).show();
+    }
+
     FlowingDrawer drawer;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
