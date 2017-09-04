@@ -56,12 +56,12 @@ public class CrewInfo extends AppCompatActivity {
                             if (json.has("birthday"))
                                 ((TextView)findViewById(R.id.tv_birth)).setText(json.getString("birthday"));
                             if (json.has("deathday")){
-                               if(json.getString("deathday")!=null)
+                               if(json.getString("deathday")!=null && !json.getString("deathday").equals("null"))
                             ((TextView)findViewById(R.id.tv_death)).setText(json.getString("deathday"));
                             }
                             if (json.has("gender")) {
                                 String g = json.getString("gender").equals("1") ? "female" : "male";
-                                ((TextView) findViewById(R.id.tv_gender)).append(g);
+                                ((TextView) findViewById(R.id.tv_gender)).setText(g);
                             }
                             Glide.with(CrewInfo.this)
                                     .load("http://image.tmdb.org/t/p/w342"+json.getString("profile_path"))

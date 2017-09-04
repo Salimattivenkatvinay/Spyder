@@ -37,6 +37,8 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.like.LikeButton;
+import com.like.OnLikeListener;
 import com.mxn.soul.flowingdrawer_core.FlowingDrawer;
 import com.vinay.spyder.R;
 import com.vinay.spyder.Spyder;
@@ -211,6 +213,22 @@ public class RatingActivity extends AppCompatActivity
             getSupportActionBar().setTitle(title);
 
         rv_movie.scrollToPosition(0);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if(item.getItemId()==R.id.logout){
+            Preferences.logOut(RatingActivity.this);
+            startActivity(new Intent(RatingActivity.this,LoginActivity.class));
+            finishAffinity();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu,menu);
+        return true;
     }
 
     public void showUserList(View view) {
@@ -467,6 +485,7 @@ public class RatingActivity extends AppCompatActivity
             ImageView backdropView, posterView;
             MaterialRatingBar ratingBar;
             View parentView, loadingMask, errorMask;
+            LikeButton favourite,watchlist;
 
             public Myholder(View itemView) {
                 super(itemView);
@@ -484,6 +503,8 @@ public class RatingActivity extends AppCompatActivity
                 backdropView = itemView.findViewById(R.id.backdrop);
                 posterView = itemView.findViewById(R.id.poster);
                 ratingBar = itemView.findViewById(R.id.ratingbar);
+                favourite = itemView.findViewById(R.id.fav);
+                watchlist = itemView.findViewById(R.id.watch);
             }
         }
 
@@ -499,7 +520,41 @@ public class RatingActivity extends AppCompatActivity
         public void onBindViewHolder(final Myholder holder, final int position) {
             holder.loadingMask.setVisibility(View.VISIBLE);
             holder.errorMask.setVisibility(View.GONE);
+
+            if (Preferences.isFavourite(RatingActivity.this,mvieId.get(position))){
+                holder.favourite.setLiked(true);
+            }else holder.favourite.setLiked(false);
+            if (Preferences.isWatchList(RatingActivity.this,mvieId.get(position))){
+                holder.watchlist.setLiked(true);
+            }else holder.watchlist.setLiked(false);
+
+            holder.favourite.setOnLikeListener(new OnLikeListener() {
+                @Override
+                public void liked(LikeButton likeButton) {
+                    Preferences.addToFavourite(RatingActivity.this,mvieId.get(position));
+                }
+
+                @Override
+                public void unLiked(LikeButton likeButton) {
+                    Preferences.removeFromFavourite(RatingActivity.this,mvieId.get(position));
+                }
+            });
+
+
+            holder.watchlist.setOnLikeListener(new OnLikeListener() {
+                @Override
+                public void liked(LikeButton likeButton) {
+                    Preferences.addToWatchList(RatingActivity.this,mvieId.get(position));
+                }
+
+                @Override
+                public void unLiked(LikeButton likeButton) {
+                    Preferences.removeFromWatchList(RatingActivity.this,mvieId.get(position));
+                }
+            });
+
             if (!swipeRefreshLayout.isRefreshing()) {
+
                 holder.parentView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {

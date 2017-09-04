@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -49,7 +50,7 @@
             android:layout_height="wrap_content"
             android:backgroundTint="#ffff"
             android:drawableStart="@android:drawable/ic_lock_lock"
-            android:hint="@string/passwoard"
+            android:hint="password"
             android:inputType="textPassword"
             android:textColor="#cccccc"
             android:textSize="20sp"

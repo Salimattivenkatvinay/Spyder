@@ -23,6 +23,13 @@
             android:tint="#50000000" />
 
         <ImageView
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:background="@drawable/ic_ondemand_video_white_24dp"
+            android:layout_alignParentEnd="true"
+            android:layout_margin="8dp"/>
+
+        <ImageView
             android:id="@+id/poster"
             android:layout_width="120dp"
             android:layout_height="180dp"
@@ -101,6 +108,46 @@
                 android:gravity="center"
                 android:text="0.0"
                 android:textSize="15sp" />
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="50dp"
+                android:layout_alignParentEnd="true"
+                android:layout_below="@id/ratingbar"
+                android:layout_marginEnd="8dp">
+                <com.like.LikeButton
+                    android:id="@+id/fav"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="10dp"
+                    android:gravity="top"
+                    app:anim_scale_factor="2"
+                    app:circle_end_color="@android:color/darker_gray"
+                    app:circle_start_color="@android:color/white"
+                    app:dots_primary_color="@android:color/darker_gray"
+                    app:dots_secondary_color="@android:color/white"
+                    app:icon_size="15dp"
+                    app:icon_type="heart"
+                    app:is_enabled="true"
+                    app:liked="true" />
+
+                <com.like.LikeButton
+                    android:id="@+id/watch"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_marginStart="10dp"
+                    android:gravity="top"
+                    app:anim_scale_factor="2"
+                    app:circle_end_color="@android:color/darker_gray"
+                    app:circle_start_color="@android:color/white"
+                    app:dots_primary_color="@android:color/darker_gray"
+                    app:dots_secondary_color="@android:color/white"
+                    app:icon_size="15dp"
+                    app:is_enabled="true"
+                    app:like_drawable="@drawable/ic_ondemand_video_white_24dp"
+                    app:liked="true"
+                    app:unlike_drawable="@drawable/ic_ondemand_video_black_24dp" />
+            </LinearLayout>
+
         </RelativeLayout>
 
         <TextView
@@ -124,6 +171,7 @@
             android:maxLines="2"
             android:text=""
             android:textSize="15sp" />
+
     </RelativeLayout>
 
     <RelativeLayout
