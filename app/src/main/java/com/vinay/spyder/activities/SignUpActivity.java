@@ -49,7 +49,7 @@ public class SignUpActivity extends AppCompatActivity {
                         @Override
                         public void onErrorResponse(VolleyError error) {
                             progressDialog.dismiss();
-                            Toast.makeText(getApplicationContext(),error.getMessage(),Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getApplicationContext(),"network interupted.Pls try again!!",Toast.LENGTH_SHORT).show();
                         }
                     });
                     requestQueue.add(stringRequest);

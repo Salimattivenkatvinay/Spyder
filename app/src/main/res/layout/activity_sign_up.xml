@@ -30,7 +30,7 @@
             android:layout_height="wrap_content"
             android:backgroundTint="#ffff"
             android:drawableStart="@drawable/ic_person_outline_white_24dp"
-            android:hint="@string/username"
+            android:hint=" e-Mail"
             android:inputType="textPersonName"
             android:textColor="#cccccc"
             android:textSize="20sp"

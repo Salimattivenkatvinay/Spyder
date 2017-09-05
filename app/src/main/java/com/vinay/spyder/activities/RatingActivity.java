@@ -28,7 +28,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-
 import com.allattentionhere.fabulousfilter.AAH_FabulousFragment;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -37,11 +36,11 @@ import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
 import com.like.LikeButton;
 import com.like.OnLikeListener;
 import com.mxn.soul.flowingdrawer_core.FlowingDrawer;
 import com.vinay.spyder.R;
-import com.vinay.spyder.Spyder;
 import com.vinay.spyder.utils.DataBaseHelper;
 import com.vinay.spyder.utils.Preferences;
 
@@ -54,10 +53,10 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import me.zhanghai.android.materialratingbar.MaterialRatingBar;
 
@@ -79,7 +78,7 @@ public class RatingActivity extends AppCompatActivity
     String FAVOURITES = "favourites";
     String WATCHLIST = "watch";
     String RATEDMOVIES = "rated";
-
+    ProgressDialog pb;
     DataBaseHelper dataBaseHelper;
 
     @Override
@@ -107,7 +106,7 @@ public class RatingActivity extends AppCompatActivity
         swipeRefreshLayout.setOnRefreshListener(this);
         fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setVisibility(View.GONE);
-
+        pb= new ProgressDialog(RatingActivity.this);
         view=findViewById(R.id.root_layout);
         setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
         currentShowingList = INIT;
@@ -218,7 +217,26 @@ public class RatingActivity extends AppCompatActivity
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if(item.getItemId()==R.id.logout){
-            Preferences.logOut(RatingActivity.this);
+           /* Preferences.logOut(RatingActivity.this);
+            String ratedmovies=new Gson().toJson(Preferences.getRatedMovies1(RatingActivity.this));
+            String favmovies=new Gson().toJson(Preferences.getFavourites(RatingActivity.this));
+            String wlmovies=new Gson().toJson(Preferences.getWatchList(RatingActivity.this));
+            Log.i("gson",ratedmovies+"\n"+favmovies+"\n"+wlmovies);*/
+            /*
+            RequestQueue requestQueue=Volley.newRequestQueue(RatingActivity.this);
+            StringRequest stringRequest=new StringRequest(Request.Method.GET, "", new Response.Listener<String>() {
+                @Override
+                public void onResponse(String response) {
+
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+
+                }
+            });
+            requestQueue.add(stringRequest);*/
+
             startActivity(new Intent(RatingActivity.this,LoginActivity.class));
             finishAffinity();
         }
@@ -482,13 +500,14 @@ public class RatingActivity extends AppCompatActivity
 
         class Myholder extends RecyclerView.ViewHolder {
             TextView titleView, taglineView, userRatingView, tmbdRateView, genreView, yearView;
-            ImageView backdropView, posterView;
+            ImageView backdropView, posterView,youtubeicon;
             MaterialRatingBar ratingBar;
             View parentView, loadingMask, errorMask;
             LikeButton favourite,watchlist;
 
             public Myholder(View itemView) {
                 super(itemView);
+                youtubeicon=itemView.findViewById(R.id.iv_youtube);
                 errorMask = itemView.findViewById(R.id.errormask);
                 errorMask.setVisibility(View.GONE);
                 loadingMask = itemView.findViewById(R.id.loadingmask);
@@ -520,7 +539,7 @@ public class RatingActivity extends AppCompatActivity
         public void onBindViewHolder(final Myholder holder, final int position) {
             holder.loadingMask.setVisibility(View.VISIBLE);
             holder.errorMask.setVisibility(View.GONE);
-
+            holder.ratingBar.setRating(0.0f);
             if (Preferences.isFavourite(RatingActivity.this,mvieId.get(position))){
                 holder.favourite.setLiked(true);
             }else holder.favourite.setLiked(false);
@@ -555,6 +574,42 @@ public class RatingActivity extends AppCompatActivity
 
             if (!swipeRefreshLayout.isRefreshing()) {
 
+                holder.youtubeicon.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                            pb.setMessage("loading Trailer Data");
+                            RequestQueue queue = Volley.newRequestQueue(RatingActivity.this);
+                            String url = "http://api.themoviedb.org/3/movie/"+mvieId.get(position)+"/videos?api_key=7e8f60e325cd06e164799af1e317d7a7";
+                            StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                                    new Response.Listener<String>() {
+                                        @Override
+                                        public void onResponse(String response) {
+                                            pb.dismiss();
+                                            try {
+                                                JSONObject json = new JSONObject(response);
+                                                JSONArray jsonArray = json.getJSONArray("results");
+                                                if (jsonArray.length()>0) {
+                                                    JSONObject object=jsonArray.getJSONObject(0);
+                                                    //object.get("site");
+                                                    if ("YouTube".equals(object.getString("site"))){
+                                                        startActivity(new Intent(getApplicationContext(),YoutubeActivity.class).putExtra("img_url",object.getString("key")));
+                                                    }else Toast.makeText(getApplicationContext(),"no trailer found",Toast.LENGTH_SHORT).show();
+                                                }
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    }, new Response.ErrorListener() {
+                                @Override
+                                public void onErrorResponse(VolleyError error) {
+                                    pb.dismiss();
+                                    Toast.makeText(getApplicationContext(), error.getMessage(), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                            queue.add(stringRequest);
+                        }
+
+                });
                 holder.parentView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {

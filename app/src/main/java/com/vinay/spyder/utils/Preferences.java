@@ -180,6 +180,15 @@ public class Preferences {
         return topmovies;
     }
 
+    public static ArrayList<LinkedTreeMap<String, String>> getRatedMovies1(Context context) {
+        TinyDB tinyDB=new TinyDB(context);
+        ArrayList<LinkedTreeMap<String, String>> movies = tinyDB.getObject("ratedmovies", ArrayList.class);
+        if (movies == null) {
+            return null;
+        }
+        return movies;
+    }
+
     public static void addToFavourite(Context context, String tmdb_id) {
         SharedPreferences preferences = context.getSharedPreferences("userlist", Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();

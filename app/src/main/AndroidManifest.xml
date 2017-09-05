@@ -39,8 +39,10 @@
         <activity
             android:name=".activities.CrewInfo"
             android:theme="@style/Theme.AppCompat.NoActionBar" />
-        <activity android:name=".activities.WebviewActivity"
-            android:theme="@style/Theme.AppCompat.Light.DarkActionBar"/>
+        <activity
+            android:name=".activities.WebviewActivity"
+            android:theme="@style/Theme.AppCompat.Light.DarkActionBar" />
+        <activity android:name=".activities.YoutubeActivity" android:screenOrientation="landscape"/>
     </application>
 
 </manifest>
