@@ -1,6 +1,6 @@
 # Spyder
 
-UX flow document : appflow.pptx
+UX flow document : ![App Flow Presentation](/appflow.pptx)
 
-Sample app : app-debug.apk
+Sample app : ![Application (apk file)](/app-debug.apk)
 
